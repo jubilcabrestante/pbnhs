@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/app/routes/app_router.dart';
-import 'package:pbnhs/features/list_of_reports/domain/cubit/list_reports_cubit.dart';
-import 'package:pbnhs/features/list_of_reports/repository/type_repo.dart';
+import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_cubit.dart';
+import 'package:pbnhs/features/list_type/repository/type_repo.dart';
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => ListReportsCubit(TypeRepository())),
+        BlocProvider(create: (context) => ListTypeCubit(TypeRepository())),
       ],
       child: MaterialApp.router(
         title: 'Flutter Demo',

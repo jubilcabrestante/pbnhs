@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pbnhs/core/models/type/type_model.dart';
-import 'package:pbnhs/features/list_of_reports/domain/cubit/list_reports_state.dart';
-import 'package:pbnhs/features/list_of_reports/repository/type_repo.dart';
+import 'package:pbnhs/features/list_type/repository/type_model/type_model.dart';
+import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_state.dart';
+import 'package:pbnhs/features/list_type/repository/type_repo.dart';
 
-class ListReportsCubit extends Cubit<ListReportsState> {
+class ListTypeCubit extends Cubit<ListTypeState> {
   final TypeRepository _typeRepository;
 
-  ListReportsCubit(this._typeRepository) : super(const ListReportsState());
+  ListTypeCubit(this._typeRepository) : super(const ListTypeState());
 
   Future<void> fetchTypes() async {
     emit(state.copyWith(isLoading: true, errorMessage: null));

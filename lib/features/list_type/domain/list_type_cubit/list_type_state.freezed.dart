@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'list_reports_state.dart';
+part of 'list_type_state.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,7 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$ListReportsState {
+mixin _$ListTypeState {
   String? get errorMessage => throw _privateConstructorUsedError;
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isSuccess => throw _privateConstructorUsedError;
@@ -23,18 +23,18 @@ mixin _$ListReportsState {
   List<TypeModel> get typeModel => throw _privateConstructorUsedError;
   TypeModel? get selectedType => throw _privateConstructorUsedError;
 
-  /// Create a copy of ListReportsState
+  /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  $ListReportsStateCopyWith<ListReportsState> get copyWith =>
+  $ListTypeStateCopyWith<ListTypeState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $ListReportsStateCopyWith<$Res> {
-  factory $ListReportsStateCopyWith(
-          ListReportsState value, $Res Function(ListReportsState) then) =
-      _$ListReportsStateCopyWithImpl<$Res, ListReportsState>;
+abstract class $ListTypeStateCopyWith<$Res> {
+  factory $ListTypeStateCopyWith(
+          ListTypeState value, $Res Function(ListTypeState) then) =
+      _$ListTypeStateCopyWithImpl<$Res, ListTypeState>;
   @useResult
   $Res call(
       {String? errorMessage,
@@ -48,16 +48,16 @@ abstract class $ListReportsStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$ListReportsStateCopyWithImpl<$Res, $Val extends ListReportsState>
-    implements $ListReportsStateCopyWith<$Res> {
-  _$ListReportsStateCopyWithImpl(this._value, this._then);
+class _$ListTypeStateCopyWithImpl<$Res, $Val extends ListTypeState>
+    implements $ListTypeStateCopyWith<$Res> {
+  _$ListTypeStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of ListReportsState
+  /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -97,7 +97,7 @@ class _$ListReportsStateCopyWithImpl<$Res, $Val extends ListReportsState>
     ) as $Val);
   }
 
-  /// Create a copy of ListReportsState
+  /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @pragma('vm:prefer-inline')
@@ -113,11 +113,11 @@ class _$ListReportsStateCopyWithImpl<$Res, $Val extends ListReportsState>
 }
 
 /// @nodoc
-abstract class _$$ListReportsStateImplCopyWith<$Res>
-    implements $ListReportsStateCopyWith<$Res> {
-  factory _$$ListReportsStateImplCopyWith(_$ListReportsStateImpl value,
-          $Res Function(_$ListReportsStateImpl) then) =
-      __$$ListReportsStateImplCopyWithImpl<$Res>;
+abstract class _$$ListTypeStateImplCopyWith<$Res>
+    implements $ListTypeStateCopyWith<$Res> {
+  factory _$$ListTypeStateImplCopyWith(
+          _$ListTypeStateImpl value, $Res Function(_$ListTypeStateImpl) then) =
+      __$$ListTypeStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -133,14 +133,14 @@ abstract class _$$ListReportsStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$ListReportsStateImplCopyWithImpl<$Res>
-    extends _$ListReportsStateCopyWithImpl<$Res, _$ListReportsStateImpl>
-    implements _$$ListReportsStateImplCopyWith<$Res> {
-  __$$ListReportsStateImplCopyWithImpl(_$ListReportsStateImpl _value,
-      $Res Function(_$ListReportsStateImpl) _then)
+class __$$ListTypeStateImplCopyWithImpl<$Res>
+    extends _$ListTypeStateCopyWithImpl<$Res, _$ListTypeStateImpl>
+    implements _$$ListTypeStateImplCopyWith<$Res> {
+  __$$ListTypeStateImplCopyWithImpl(
+      _$ListTypeStateImpl _value, $Res Function(_$ListTypeStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of ListReportsState
+  /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
@@ -152,7 +152,7 @@ class __$$ListReportsStateImplCopyWithImpl<$Res>
     Object? typeModel = null,
     Object? selectedType = freezed,
   }) {
-    return _then(_$ListReportsStateImpl(
+    return _then(_$ListTypeStateImpl(
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
           : errorMessage // ignore: cast_nullable_to_non_nullable
@@ -183,8 +183,8 @@ class __$$ListReportsStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ListReportsStateImpl implements _ListReportsState {
-  const _$ListReportsStateImpl(
+class _$ListTypeStateImpl implements _ListTypeState {
+  const _$ListTypeStateImpl(
       {this.errorMessage,
       this.isLoading = false,
       this.isSuccess = false,
@@ -218,14 +218,14 @@ class _$ListReportsStateImpl implements _ListReportsState {
 
   @override
   String toString() {
-    return 'ListReportsState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole, typeModel: $typeModel, selectedType: $selectedType)';
+    return 'ListTypeState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole, typeModel: $typeModel, selectedType: $selectedType)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ListReportsStateImpl &&
+            other is _$ListTypeStateImpl &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
             (identical(other.isLoading, isLoading) ||
@@ -249,24 +249,23 @@ class _$ListReportsStateImpl implements _ListReportsState {
       const DeepCollectionEquality().hash(_typeModel),
       selectedType);
 
-  /// Create a copy of ListReportsState
+  /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ListReportsStateImplCopyWith<_$ListReportsStateImpl> get copyWith =>
-      __$$ListReportsStateImplCopyWithImpl<_$ListReportsStateImpl>(
-          this, _$identity);
+  _$$ListTypeStateImplCopyWith<_$ListTypeStateImpl> get copyWith =>
+      __$$ListTypeStateImplCopyWithImpl<_$ListTypeStateImpl>(this, _$identity);
 }
 
-abstract class _ListReportsState implements ListReportsState {
-  const factory _ListReportsState(
+abstract class _ListTypeState implements ListTypeState {
+  const factory _ListTypeState(
       {final String? errorMessage,
       final bool isLoading,
       final bool isSuccess,
       final bool isRole,
       final List<TypeModel> typeModel,
-      final TypeModel? selectedType}) = _$ListReportsStateImpl;
+      final TypeModel? selectedType}) = _$ListTypeStateImpl;
 
   @override
   String? get errorMessage;
@@ -281,10 +280,10 @@ abstract class _ListReportsState implements ListReportsState {
   @override
   TypeModel? get selectedType;
 
-  /// Create a copy of ListReportsState
+  /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.
   @override
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ListReportsStateImplCopyWith<_$ListReportsStateImpl> get copyWith =>
+  _$$ListTypeStateImplCopyWith<_$ListTypeStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

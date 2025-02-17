@@ -14,7 +14,7 @@ class TypeModel with _$TypeModel {
   factory TypeModel.fromFirestore(DocumentSnapshot<Map<String, dynamic>> doc) {
     final data = doc.data();
     return TypeModel(
-      types: (data?['type'] as List<dynamic>?)
+      types: (data?['types'] as List<dynamic>?)
               ?.map((e) => e.toString())
               .toList() ??
           [],
