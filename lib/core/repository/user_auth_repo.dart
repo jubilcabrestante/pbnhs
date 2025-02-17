@@ -12,5 +12,7 @@ abstract class UserAuthRepository {
 
   Future<void> resetPassword(String email);
 
+  Future<void> createUserWithEmailAndPassword(UserModel user, String password);
+
   Future<void> updatePassword(String newPassword);
 }

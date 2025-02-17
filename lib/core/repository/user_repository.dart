@@ -25,7 +25,36 @@ class UserRepository implements UserAuthRepository {
       await _firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
     } catch (e) {
-      log(e.toString());
+      log("Sign-in failed: ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> createUserWithEmailAndPassword(
+      UserModel user, String password) async {
+    try {
+      // Create user in Firebase Authentication
+      UserCredential userCredential =
+          await _firebaseAuth.createUserWithEmailAndPassword(
+              email: user.email, password: password);
+
+      if (userCredential.user == null) {
+        throw Exception("User creation failed.");
+      }
+
+      // Create a new UserModel instance with the generated UID
+      final newUser = UserModel(
+        uid: userCredential.user!.uid,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      );
+
+      // Save user to Firestore
+      await saveUser(newUser);
+    } catch (e) {
+      log("Failed to create user: ${e.toString()}");
       rethrow;
     }
   }
@@ -33,7 +62,7 @@ class UserRepository implements UserAuthRepository {
   @override
   Future<void> saveUser(UserModel user) async {
     try {
-      await _firestore.collection('users').doc(user.uid).set(user.toJson());
+      await _firestore.collection('admin').doc(user.uid).set(user.toJson());
     } catch (e) {
       log("Failed to save user: ${e.toString()}");
       rethrow;
@@ -45,7 +74,7 @@ class UserRepository implements UserAuthRepository {
     try {
       await _firebaseAuth.signOut();
     } catch (e) {
-      log(e.toString());
+      log("Logout failed: ${e.toString()}");
       rethrow;
     }
   }
@@ -55,7 +84,7 @@ class UserRepository implements UserAuthRepository {
     try {
       await _firebaseAuth.sendPasswordResetEmail(email: email);
     } catch (e) {
-      log(e.toString());
+      log("Password reset failed: ${e.toString()}");
       rethrow;
     }
   }
@@ -71,7 +100,7 @@ class UserRepository implements UserAuthRepository {
         throw Exception('User is not logged in');
       }
     } catch (e) {
-      log(e.toString());
+      log("Password update failed: ${e.toString()}");
       rethrow;
     }
   }

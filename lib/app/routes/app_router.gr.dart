@@ -11,7 +11,8 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:auto_route/auto_route.dart' as _i5;
 import 'package:pbnhs/app/app_screen.dart' as _i2;
-import 'package:pbnhs/features/accounts/accounts_screen.dart' as _i1;
+import 'package:pbnhs/features/accounts/presentation/accounts_screen.dart'
+    as _i1;
 import 'package:pbnhs/features/list_type/list_reports_screen.dart' as _i3;
 import 'package:pbnhs/features/list_type/presentation/list_type_screen.dart'
     as _i4;
