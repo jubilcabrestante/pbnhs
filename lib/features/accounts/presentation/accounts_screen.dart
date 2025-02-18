@@ -129,7 +129,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
   void _showEditDialog(UserModel user) {
     showDialog(
       context: context,
-      builder: (context) => AccountDialog(user: user),
+      builder: (context) => AccountDialog(user: user), // Pass the actual user
     );
   }
 

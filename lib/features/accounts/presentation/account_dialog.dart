@@ -10,7 +10,7 @@ import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
 
 class AccountDialog extends StatefulWidget {
-  final UserModel? user; // If null, it's for creating a new account
+  final UserModel? user;
   const AccountDialog({super.key, this.user});
 
   @override
@@ -42,9 +42,7 @@ class _AccountDialogState extends State<AccountDialog> {
     final bool isEditing = widget.user != null;
 
     return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
       child: SizedBox(
         width: 400,
         child: Padding(
@@ -54,7 +52,7 @@ class _AccountDialogState extends State<AccountDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header with Close Button
+                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -64,14 +62,12 @@ class _AccountDialogState extends State<AccountDialog> {
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.close),
-                      onPressed: () => Navigator.pop(context),
-                    ),
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context)),
                   ],
                 ),
                 const SizedBox(height: 15),
 
-                // Name Field
                 CustomTextfield(
                   controller: _nameController,
                   label: 'Name',
@@ -79,7 +75,6 @@ class _AccountDialogState extends State<AccountDialog> {
                 ),
                 const SizedBox(height: 15),
 
-                // Email Field
                 CustomTextfield(
                   controller: _emailController,
                   label: 'Email',
@@ -88,7 +83,6 @@ class _AccountDialogState extends State<AccountDialog> {
                 ),
                 const SizedBox(height: 15),
 
-                // Password Field (Only for Account Creation)
                 if (!isEditing) ...[
                   CustomTextfield(
                     controller: _passwordController,
@@ -100,13 +94,11 @@ class _AccountDialogState extends State<AccountDialog> {
                   const SizedBox(height: 15),
                 ],
 
-                // Role Dropdown
                 DropdownButtonFormField<UserRole>(
                   value: _selectedRole,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+                        borderRadius: BorderRadius.circular(15)),
                     contentPadding: const EdgeInsets.symmetric(
                         horizontal: 12, vertical: 14),
                   ),
@@ -127,59 +119,54 @@ class _AccountDialogState extends State<AccountDialog> {
                 ),
                 const SizedBox(height: 20),
 
-                // BlocListener & BlocBuilder for handling form submission
-                BlocListener<AccountCubit, AccountState>(
+                BlocConsumer<AccountCubit, AccountState>(
                   listener: (context, state) {
                     if (state.isSuccess) {
-                      Navigator.pop(context); // Close dialog on success
+                      Navigator.pop(context);
+                      context.read<AccountCubit>().getUsers();
                     } else if (state.errorMessage != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.errorMessage!)),
                       );
                     }
                   },
-                  child: BlocBuilder<AccountCubit, AccountState>(
-                    builder: (context, state) {
-                      return state.isLoading
-                          ? const CircularProgressIndicator()
-                          : CustomButton(
-                              text:
-                                  isEditing ? 'Save Changes' : 'Create Account',
-                              onTap: () {
-                                if (_formKey.currentState!.validate()) {
-                                  if (isEditing) {
-                                    // Updating existing account
-                                    final updatedUser = widget.user!.copyWith(
-                                      name: _nameController.text,
-                                      email: _emailController.text,
-                                      role: _selectedRole
-                                              ?.toString()
-                                              .split('.')
-                                              .last ??
-                                          '',
-                                    );
-                                    context
-                                        .read<AccountCubit>()
-                                        .updateUser(updatedUser);
-                                  } else {
-                                    // Creating new account
-                                    final newUser = UserModel(
-                                      name: _nameController.text,
-                                      email: _emailController.text,
-                                      role: _selectedRole
-                                              ?.toString()
-                                              .split('.')
-                                              .last ??
-                                          '',
-                                    );
-                                    context.read<AccountCubit>().createAccount(
-                                        newUser, _passwordController.text);
-                                  }
+                  builder: (context, state) {
+                    return state.isLoading
+                        ? const CircularProgressIndicator()
+                        : CustomButton(
+                            text: isEditing ? 'Save Changes' : 'Create Account',
+                            onTap: () {
+                              if (_formKey.currentState!.validate()) {
+                                final accountCubit =
+                                    context.read<AccountCubit>();
+                                if (isEditing) {
+                                  final updatedUser = widget.user!.copyWith(
+                                    name: _nameController.text,
+                                    email: _emailController.text,
+                                    role: _selectedRole
+                                            ?.toString()
+                                            .split('.')
+                                            .last ??
+                                        '',
+                                  );
+                                  accountCubit.updateUser(updatedUser);
+                                } else {
+                                  final newUser = UserModel(
+                                    name: _nameController.text,
+                                    email: _emailController.text,
+                                    role: _selectedRole
+                                            ?.toString()
+                                            .split('.')
+                                            .last ??
+                                        '',
+                                  );
+                                  accountCubit.createAccount(
+                                      newUser, _passwordController.text);
                                 }
-                              },
-                            );
-                    },
-                  ),
+                              }
+                            },
+                          );
+                  },
                 ),
               ],
             ),
@@ -187,13 +174,5 @@ class _AccountDialogState extends State<AccountDialog> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
   }
 }

@@ -9,11 +9,34 @@ class AccountCubit extends Cubit<AccountState> {
   AccountCubit(this._userRepository) : super(const AccountState());
 
   Future<void> createAccount(UserModel user, String password) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
 
     try {
       await _userRepository.createUserWithEmailAndPassword(user, password);
-      emit(state.copyWith(isLoading: false, isSuccess: true));
+      final updatedUsers = await _userRepository.getUsers();
+
+      emit(state.copyWith(
+          isLoading: false, isSuccess: true, users: updatedUsers));
+
+      // Reset isSuccess to prevent infinite loop
+      emit(state.copyWith(isSuccess: false));
+    } catch (e) {
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> updateUser(UserModel user) async {
+    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
+
+    try {
+      await _userRepository.saveUser(user);
+      final updatedUsers = await _userRepository.getUsers();
+
+      emit(state.copyWith(
+          isLoading: false, isSuccess: true, users: updatedUsers));
+
+      // Reset isSuccess
+      emit(state.copyWith(isSuccess: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
@@ -30,21 +53,17 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
-  Future<void> updateUser(UserModel user) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
-    try {
-      await _userRepository.saveUser(user);
-      emit(state.copyWith(isLoading: false, isSuccess: true));
-    } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
-    }
-  }
-
   Future<void> deleteUser(String uid) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null));
+    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
+
     try {
       await _userRepository.deleteUser(uid);
-      emit(state.copyWith(isLoading: false, isSuccess: true));
+      final updatedUsers = await _userRepository.getUsers();
+
+      emit(state.copyWith(
+          isLoading: false, isSuccess: true, users: updatedUsers));
+
+      emit(state.copyWith(isSuccess: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
