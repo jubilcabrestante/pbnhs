@@ -4,22 +4,30 @@ class CustomTextfield extends StatelessWidget {
   final TextEditingController controller;
   final String? hintText;
   final String label;
+  final bool obscure;
+  final EdgeInsetsGeometry? padding;
+  final String? Function(String?)? validator;
 
   const CustomTextfield({
     super.key,
     required this.controller,
     this.hintText,
     required this.label,
+    this.padding,
+    this.obscure = false,
+    this.validator, // Added validator
   });
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: controller,
+      obscureText: obscure,
+      validator: validator, // Apply validation here
       decoration: InputDecoration(
-        label: Text(label),
+        labelText: label,
         hintText: hintText,
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(15)),
       ),
     );
   }

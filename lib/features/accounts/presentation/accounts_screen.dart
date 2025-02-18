@@ -1,12 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
-import 'package:pbnhs/core/models/user_roles/user_roles_model.dart';
-import 'package:pbnhs/features/accounts/cubit/account_cubit.dart';
 import 'package:pbnhs/core/models/user_model/user_model.dart';
-import 'package:pbnhs/features/accounts/cubit/account_state.dart';
-import 'package:pbnhs/core/enum/user_roles.dart';
+import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
+import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
+import 'package:pbnhs/features/accounts/presentation/create_account.dart';
 
 @RoutePage()
 class AccountsScreen extends StatefulWidget {
@@ -17,22 +15,20 @@ class AccountsScreen extends StatefulWidget {
 }
 
 class _AccountsScreenState extends State<AccountsScreen> {
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _roleController = TextEditingController();
-
-  // Store selected role as UserRole enum
-  UserRole? _selectedRole;
+  @override
+  void initState() {
+    super.initState();
+    // Fetch users when the screen is first loaded
+    context.read<AccountCubit>().getUsers();
+  }
 
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AccountCubit, AccountState>(
       listener: (context, state) {
         if (state.isSuccess) {
-          // Handle successful user creation (e.g., navigate away)
+          context.read<AccountCubit>().getUsers(); // Refresh users list
         } else if (state.errorMessage != null) {
-          // Show error message if user creation failed
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage!)),
           );
@@ -40,65 +36,93 @@ class _AccountsScreenState extends State<AccountsScreen> {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Create Account')),
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                CustomTextfield(
-                  controller: _nameController,
-                  label: 'Name',
-                ),
-                CustomTextfield(
-                  controller: _emailController,
-                  label: 'Email',
-                ),
-                CustomTextfield(
-                  controller: _passwordController,
-                  label: 'Password',
-                ),
-                // Dropdown for role selection
-                DropdownButton<UserRole>(
-                  value: _selectedRole,
-                  hint: Text("Select Role"),
-                  onChanged: (UserRole? newValue) {
-                    setState(() {
-                      _selectedRole = newValue;
-                    });
-                  },
-                  items: UserRole.values.map((UserRole role) {
-                    return DropdownMenuItem<UserRole>(
-                      value: role,
-                      child: Text(UserRoles.getRoleName(role)),
-                    );
-                  }).toList(),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Accounts',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        showDialog(
+                          context: context,
+                          builder: (context) => const CreateAccountDialog(),
+                        );
+                      },
+                      child: const Text('Create Account'),
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 20),
-                state.isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : ElevatedButton(
-                        onPressed: () {
-                          if (_selectedRole != null) {
-                            final user = UserModel(
-                              uid: '', // Generate or assign UID here
-                              name: _nameController.text,
-                              email: _emailController.text,
-                              role: _selectedRole!, // Pass selected UserRole
-                            );
-
-                            // Call the createAccount function from the cubit
-                            context
-                                .read<AccountCubit>()
-                                .createAccount(user, _passwordController.text);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text('Please select a role')),
-                            );
-                          }
-                        },
-                        child: const Text('Create Account'),
-                      ),
+                // Display list of users
+                state.users != null && state.users!.isNotEmpty
+                    ? Expanded(
+                        child: SingleChildScrollView(
+                          scrollDirection:
+                              Axis.horizontal, // Enable horizontal scrolling
+                          child: DataTable(
+                            columnSpacing: 20.0, // Adjust spacing
+                            headingRowColor: WidgetStateColor.resolveWith(
+                                (states) => Colors.grey[300]!),
+                            border: TableBorder.all(
+                                color: Colors.grey), // Add border
+                            columns: const [
+                              DataColumn(
+                                  label: Text('Name',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                              DataColumn(
+                                  label: Text('Email',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                              DataColumn(
+                                  label: Text('Role',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                              DataColumn(
+                                  label: Text('Actions',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                            ],
+                            rows: state.users!.map((user) {
+                              return DataRow(cells: [
+                                DataCell(Text(user.name)),
+                                DataCell(Text(user.email)),
+                                DataCell(Text(user.role)),
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.edit),
+                                        onPressed: () {
+                                          // Trigger the edit action
+                                          // You can show an edit dialog or open an edit screen
+                                          _showEditDialog(user);
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete),
+                                        onPressed: () {
+                                          // Trigger the delete action
+                                          _deleteUser(user.uid);
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ]);
+                            }).toList(),
+                          ),
+                        ),
+                      )
+                    : const Center(child: Text('No users available')),
               ],
             ),
           ),
@@ -107,12 +131,75 @@ class _AccountsScreenState extends State<AccountsScreen> {
     );
   }
 
-  @override
-  void dispose() {
-    _nameController.dispose();
-    _emailController.dispose();
-    _passwordController.dispose();
-    _roleController.dispose();
-    super.dispose();
+  // Function to show the edit dialog (you can replace this with a custom screen)
+  void _showEditDialog(UserModel user) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Edit Account'),
+          content: TextField(
+            controller: TextEditingController(text: user.name),
+            decoration: const InputDecoration(hintText: 'Enter new name'),
+            onChanged: (value) {
+              // You can modify the user model as needed here
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.read<AccountCubit>().updateUser(user);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Save'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Function to delete a user
+  // Function to delete a user
+  void _deleteUser(String? uid) {
+    if (uid == null) {
+      // Handle the case where uid is null, maybe show a message
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('User ID is null, cannot delete account.')),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Account'),
+          content: const Text('Are you sure you want to delete this account?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                context.read<AccountCubit>().deleteUser(uid);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Delete'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
   }
 }

@@ -11,7 +11,7 @@ _$UserModelImpl _$$UserModelImplFromJson(Map<String, dynamic> json) =>
       uid: json['uid'] as String?,
       name: json['name'] as String,
       email: json['email'] as String,
-      role: $enumDecode(_$UserRoleEnumMap, json['role']),
+      role: json['role'] as String,
     );
 
 Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
@@ -19,10 +19,5 @@ Map<String, dynamic> _$$UserModelImplToJson(_$UserModelImpl instance) =>
       'uid': instance.uid,
       'name': instance.name,
       'email': instance.email,
-      'role': _$UserRoleEnumMap[instance.role]!,
+      'role': instance.role,
     };
-
-const _$UserRoleEnumMap = {
-  UserRole.superAdmin: 'superAdmin',
-  UserRole.teacher: 'teacher',
-};

@@ -1,7 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:pbnhs/app/routes/app_router.gr.dart';
-import 'package:pbnhs/core/constants/colors.dart';
 import 'package:pbnhs/gen/assets.gen.dart';
 
 @RoutePage()
@@ -53,9 +52,8 @@ class AppScreen extends StatelessWidget {
             Container(
               width: MediaQuery.of(context).size.width * 0.7,
               height: MediaQuery.of(context).size.height * 0.9,
-              decoration: BoxDecoration(
-                  color: AppColors.secondarybackground,
-                  borderRadius: BorderRadius.circular(25)),
+              decoration:
+                  BoxDecoration(borderRadius: BorderRadius.circular(25)),
               child: const AutoRouter(),
             ),
           ],

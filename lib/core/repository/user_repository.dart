@@ -2,17 +2,14 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pbnhs/core/repository/user_auth_repo.dart';
-import '../models/user_model/user_model.dart';
 
 class UserRepository implements UserAuthRepository {
   final FirebaseAuth _firebaseAuth;
-  final FirebaseFirestore _firestore;
 
   UserRepository({
     FirebaseAuth? firebaseAuth,
     FirebaseFirestore? firestore,
-  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _firestore = firestore ?? FirebaseFirestore.instance;
+  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
 
   @override
   Stream<User?> get user {
@@ -26,45 +23,6 @@ class UserRepository implements UserAuthRepository {
           email: email, password: password);
     } catch (e) {
       log("Sign-in failed: ${e.toString()}");
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> createUserWithEmailAndPassword(
-      UserModel user, String password) async {
-    try {
-      // Create user in Firebase Authentication
-      UserCredential userCredential =
-          await _firebaseAuth.createUserWithEmailAndPassword(
-              email: user.email, password: password);
-
-      if (userCredential.user == null) {
-        throw Exception("User creation failed.");
-      }
-
-      // Create a new UserModel instance with the generated UID
-      final newUser = UserModel(
-        uid: userCredential.user!.uid,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      );
-
-      // Save user to Firestore
-      await saveUser(newUser);
-    } catch (e) {
-      log("Failed to create user: ${e.toString()}");
-      rethrow;
-    }
-  }
-
-  @override
-  Future<void> saveUser(UserModel user) async {
-    try {
-      await _firestore.collection('admin').doc(user.uid).set(user.toJson());
-    } catch (e) {
-      log("Failed to save user: ${e.toString()}");
       rethrow;
     }
   }

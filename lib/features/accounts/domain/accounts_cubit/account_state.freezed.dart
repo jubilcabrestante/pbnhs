@@ -20,6 +20,7 @@ mixin _$AccountState {
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isSuccess => throw _privateConstructorUsedError;
   bool get isRole => throw _privateConstructorUsedError;
+  List<UserModel>? get users => throw _privateConstructorUsedError;
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.
@@ -35,7 +36,11 @@ abstract class $AccountStateCopyWith<$Res> {
       _$AccountStateCopyWithImpl<$Res, AccountState>;
   @useResult
   $Res call(
-      {String? errorMessage, bool isLoading, bool isSuccess, bool isRole});
+      {String? errorMessage,
+      bool isLoading,
+      bool isSuccess,
+      bool isRole,
+      List<UserModel>? users});
 }
 
 /// @nodoc
@@ -57,6 +62,7 @@ class _$AccountStateCopyWithImpl<$Res, $Val extends AccountState>
     Object? isLoading = null,
     Object? isSuccess = null,
     Object? isRole = null,
+    Object? users = freezed,
   }) {
     return _then(_value.copyWith(
       errorMessage: freezed == errorMessage
@@ -75,6 +81,10 @@ class _$AccountStateCopyWithImpl<$Res, $Val extends AccountState>
           ? _value.isRole
           : isRole // ignore: cast_nullable_to_non_nullable
               as bool,
+      users: freezed == users
+          ? _value.users
+          : users // ignore: cast_nullable_to_non_nullable
+              as List<UserModel>?,
     ) as $Val);
   }
 }
@@ -88,7 +98,11 @@ abstract class _$$AccountStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? errorMessage, bool isLoading, bool isSuccess, bool isRole});
+      {String? errorMessage,
+      bool isLoading,
+      bool isSuccess,
+      bool isRole,
+      List<UserModel>? users});
 }
 
 /// @nodoc
@@ -108,6 +122,7 @@ class __$$AccountStateImplCopyWithImpl<$Res>
     Object? isLoading = null,
     Object? isSuccess = null,
     Object? isRole = null,
+    Object? users = freezed,
   }) {
     return _then(_$AccountStateImpl(
       errorMessage: freezed == errorMessage
@@ -126,6 +141,10 @@ class __$$AccountStateImplCopyWithImpl<$Res>
           ? _value.isRole
           : isRole // ignore: cast_nullable_to_non_nullable
               as bool,
+      users: freezed == users
+          ? _value._users
+          : users // ignore: cast_nullable_to_non_nullable
+              as List<UserModel>?,
     ));
   }
 }
@@ -137,7 +156,9 @@ class _$AccountStateImpl implements _AccountState {
       {this.errorMessage,
       this.isLoading = false,
       this.isSuccess = false,
-      this.isRole = false});
+      this.isRole = false,
+      final List<UserModel>? users})
+      : _users = users;
 
   @override
   final String? errorMessage;
@@ -150,10 +171,19 @@ class _$AccountStateImpl implements _AccountState {
   @override
   @JsonKey()
   final bool isRole;
+  final List<UserModel>? _users;
+  @override
+  List<UserModel>? get users {
+    final value = _users;
+    if (value == null) return null;
+    if (_users is EqualUnmodifiableListView) return _users;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'AccountState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole)';
+    return 'AccountState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole, users: $users)';
   }
 
   @override
@@ -167,12 +197,13 @@ class _$AccountStateImpl implements _AccountState {
                 other.isLoading == isLoading) &&
             (identical(other.isSuccess, isSuccess) ||
                 other.isSuccess == isSuccess) &&
-            (identical(other.isRole, isRole) || other.isRole == isRole));
+            (identical(other.isRole, isRole) || other.isRole == isRole) &&
+            const DeepCollectionEquality().equals(other._users, _users));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, errorMessage, isLoading, isSuccess, isRole);
+  int get hashCode => Object.hash(runtimeType, errorMessage, isLoading,
+      isSuccess, isRole, const DeepCollectionEquality().hash(_users));
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.
@@ -188,7 +219,8 @@ abstract class _AccountState implements AccountState {
       {final String? errorMessage,
       final bool isLoading,
       final bool isSuccess,
-      final bool isRole}) = _$AccountStateImpl;
+      final bool isRole,
+      final List<UserModel>? users}) = _$AccountStateImpl;
 
   @override
   String? get errorMessage;
@@ -198,6 +230,8 @@ abstract class _AccountState implements AccountState {
   bool get isSuccess;
   @override
   bool get isRole;
+  @override
+  List<UserModel>? get users;
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.

@@ -16,8 +16,8 @@ class UserRoles {
     return role == UserRole.superAdmin;
   }
 
-  /// Check if a role is a teacher
-  static bool isteacher(UserRole role) {
+  /// Check if a role is a admin
+  static bool isTeacher(UserRole role) {
     return role == UserRole.teacher;
   }
 }

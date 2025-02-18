@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/app/routes/app_router.dart';
+import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
+import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
+import 'package:pbnhs/features/accounts/repository/user_account_repository.dart';
 import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_cubit.dart';
 import 'package:pbnhs/features/list_type/repository/type_repo.dart';
 
@@ -15,9 +18,10 @@ class MyApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => ListTypeCubit(TypeRepository())),
+        BlocProvider(
+            create: (context) => AccountCubit(UserAccountRepository())),
       ],
       child: MaterialApp.router(
-        title: 'Flutter Demo',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           scaffoldBackgroundColor: Colors.white,
@@ -25,6 +29,21 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         routerConfig: _appRouter.config(),
+        // Optionally, add a builder to handle errors or loading states
+        builder: (context, child) {
+          return BlocListener<AccountCubit, AccountState>(
+            listener: (context, state) {
+              // Handle any state changes here (e.g., show dialogs, navigate, etc.)
+              if (state.errorMessage != null &&
+                  state.errorMessage!.isNotEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.errorMessage!)),
+                );
+              }
+            },
+            child: child,
+          );
+        },
       ),
     );
   }
