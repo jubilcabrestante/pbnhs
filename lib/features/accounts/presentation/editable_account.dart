@@ -1,26 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
-import 'package:pbnhs/core/models/user_model/user_model.dart';
 import 'package:pbnhs/core/enum/user_roles.dart';
+import 'package:pbnhs/core/models/user_model/user_model.dart';
 import 'package:pbnhs/core/models/user_roles/user_roles_model.dart';
+import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
-import 'package:pbnhs/core/utils/validators.dart'; // ✅ Import validators
 
-class CreateAccountDialog extends StatefulWidget {
-  const CreateAccountDialog({super.key});
+import '../../../core/common_widgets/custom_button.dart';
+
+class EditAccountDialog extends StatefulWidget {
+  final UserModel user; // Accept the user model to prepopulate the fields
+
+  const EditAccountDialog({super.key, required this.user});
 
   @override
-  State<CreateAccountDialog> createState() => _CreateAccountDialogState();
+  State<EditAccountDialog> createState() => _EditAccountDialogState();
 }
 
-class _CreateAccountDialogState extends State<CreateAccountDialog> {
+class _EditAccountDialogState extends State<EditAccountDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   UserRole? _selectedRole;
+
+  @override
+  void initState() {
+    super.initState();
+    // Prepopulate the fields with the current user data
+    _nameController.text = widget.user.name;
+    _emailController.text = widget.user.email;
+    _selectedRole = UserRole.values.firstWhere(
+      (role) => role.toString().split('.').last == widget.user.role,
+      orElse: () => UserRole.teacher,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +52,7 @@ class _CreateAccountDialogState extends State<CreateAccountDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text('Create Account',
+                const Text('Edit Account',
                     style:
                         TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 const SizedBox(height: 15),
@@ -52,14 +67,6 @@ class _CreateAccountDialogState extends State<CreateAccountDialog> {
                   label: 'Email',
                   validator: (value) =>
                       Validators.validateField(value, 'Email'),
-                ),
-                const SizedBox(height: 15),
-                CustomTextfield(
-                  controller: _passwordController,
-                  label: 'Password',
-                  obscure: true,
-                  validator: (value) =>
-                      Validators.validateField(value, 'Password'),
                 ),
                 const SizedBox(height: 15),
                 SizedBox(
@@ -90,33 +97,41 @@ class _CreateAccountDialogState extends State<CreateAccountDialog> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                BlocBuilder<AccountCubit, AccountState>(
-                  builder: (context, state) {
-                    return state.isLoading
-                        ? const CircularProgressIndicator()
-                        : ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                final user = UserModel(
-                                  name: _nameController.text,
-                                  email: _emailController.text,
-                                  role: _selectedRole
-                                      .toString()
-                                      .split('.')
-                                      .last, // Convert the enum to a string
-                                );
-
-                                context.read<AccountCubit>().createAccount(
-                                      user,
-                                      _passwordController.text,
-                                    );
-
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: const Text('Create Account'),
-                          );
+                BlocListener<AccountCubit, AccountState>(
+                  listener: (context, state) {
+                    if (state.isSuccess) {
+                      Navigator.pop(context); // Close the dialog on success
+                    } else if (state.errorMessage != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.errorMessage!)),
+                      );
+                    }
                   },
+                  child: BlocBuilder<AccountCubit, AccountState>(
+                    builder: (context, state) {
+                      return state.isLoading
+                          ? const CircularProgressIndicator()
+                          : CustomButton(
+                              text: 'Save Changes',
+                              onTap: () {
+                                if (_formKey.currentState!.validate()) {
+                                  final updatedUser = widget.user.copyWith(
+                                    name: _nameController.text,
+                                    email: _emailController.text,
+                                    role: _selectedRole
+                                            ?.toString()
+                                            .split('.')
+                                            .last ??
+                                        '',
+                                  );
+
+                                  context.read<AccountCubit>().updateUser(
+                                      updatedUser); // Pass the updated user
+                                }
+                              },
+                            );
+                    },
+                  ),
                 ),
               ],
             ),
@@ -130,7 +145,6 @@ class _CreateAccountDialogState extends State<CreateAccountDialog> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 }
