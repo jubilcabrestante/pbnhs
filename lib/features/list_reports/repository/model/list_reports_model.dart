@@ -11,7 +11,8 @@ class ListReportsModel with _$ListReportsModel {
     required String type,
     required String title,
     required String link,
-    required DateTime dateUploaded,
+    @TimestampConverter()
+    required DateTime dateUploaded, // Use custom converter
     required String createdBy,
   }) = _ListReportsModel;
 
@@ -29,4 +30,24 @@ class ListReportsModel with _$ListReportsModel {
       ...data,
     });
   }
+}
+
+/// Custom converter to handle Firestore Timestamp
+class TimestampConverter implements JsonConverter<DateTime, dynamic> {
+  const TimestampConverter();
+
+  @override
+  DateTime fromJson(dynamic json) {
+    if (json is Timestamp) {
+      return json.toDate(); // Convert Firestore Timestamp to DateTime
+    } else if (json is String) {
+      return DateTime.parse(json); // In case Firestore stored it as a string
+    } else {
+      throw Exception("Invalid date format");
+    }
+  }
+
+  @override
+  dynamic toJson(DateTime date) =>
+      Timestamp.fromDate(date); // Convert DateTime to Firestore Timestamp
 }

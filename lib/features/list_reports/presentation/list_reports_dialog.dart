@@ -59,9 +59,6 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                   listener: (context, state) {
                     if (state.isSuccess) {
                       Navigator.pop(context);
-                      context
-                          .read<ListReportsCubit>()
-                          .getReports(widget.selectedType);
                     } else if (state.errorMessage != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.errorMessage!)),

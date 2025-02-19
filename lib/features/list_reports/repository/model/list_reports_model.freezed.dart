@@ -24,7 +24,9 @@ mixin _$ListReportsModel {
   String get type => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get link => throw _privateConstructorUsedError;
-  DateTime get dateUploaded => throw _privateConstructorUsedError;
+  @TimestampConverter()
+  DateTime get dateUploaded =>
+      throw _privateConstructorUsedError; // Use custom converter
   String get createdBy => throw _privateConstructorUsedError;
 
   /// Serializes this ListReportsModel to a JSON map.
@@ -48,7 +50,7 @@ abstract class $ListReportsModelCopyWith<$Res> {
       String type,
       String title,
       String link,
-      DateTime dateUploaded,
+      @TimestampConverter() DateTime dateUploaded,
       String createdBy});
 }
 
@@ -116,7 +118,7 @@ abstract class _$$ListReportsModelImplCopyWith<$Res>
       String type,
       String title,
       String link,
-      DateTime dateUploaded,
+      @TimestampConverter() DateTime dateUploaded,
       String createdBy});
 }
 
@@ -177,7 +179,7 @@ class _$ListReportsModelImpl implements _ListReportsModel {
       required this.type,
       required this.title,
       required this.link,
-      required this.dateUploaded,
+      @TimestampConverter() required this.dateUploaded,
       required this.createdBy});
 
   factory _$ListReportsModelImpl.fromJson(Map<String, dynamic> json) =>
@@ -192,7 +194,9 @@ class _$ListReportsModelImpl implements _ListReportsModel {
   @override
   final String link;
   @override
+  @TimestampConverter()
   final DateTime dateUploaded;
+// Use custom converter
   @override
   final String createdBy;
 
@@ -244,7 +248,7 @@ abstract class _ListReportsModel implements ListReportsModel {
       required final String type,
       required final String title,
       required final String link,
-      required final DateTime dateUploaded,
+      @TimestampConverter() required final DateTime dateUploaded,
       required final String createdBy}) = _$ListReportsModelImpl;
 
   factory _ListReportsModel.fromJson(Map<String, dynamic> json) =
@@ -259,7 +263,8 @@ abstract class _ListReportsModel implements ListReportsModel {
   @override
   String get link;
   @override
-  DateTime get dateUploaded;
+  @TimestampConverter()
+  DateTime get dateUploaded; // Use custom converter
   @override
   String get createdBy;
 

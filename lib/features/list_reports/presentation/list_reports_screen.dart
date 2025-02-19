@@ -66,65 +66,67 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                 const SizedBox(height: 10),
                 Expanded(
                   child: state.reports != null && state.reports!.isNotEmpty
-                      ? DataTable(
-                          columnSpacing: 20.0,
-                          headingRowColor: WidgetStateColor.resolveWith(
-                              (states) => Colors.grey[300]!),
-                          border: TableBorder.all(color: Colors.grey),
-                          columns: const [
-                            DataColumn(
-                                label: Text('Title',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            DataColumn(
-                                label: Text('Uploaded Date',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            DataColumn(
-                                label: Text('Created By',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            DataColumn(
-                                label: Text('File',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                            DataColumn(
-                                label: Text('Actions',
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.bold))),
-                          ],
-                          rows: state.reports!.map((report) {
-                            return DataRow(cells: [
-                              DataCell(Text(report.title)),
-                              DataCell(Text(formatDate(report.dateUploaded))),
-                              DataCell(Text(report.createdBy)),
-                              DataCell(Text(report.link)),
-                              DataCell(
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(Icons.edit),
-                                      onPressed: () {
-                                        // Edit functionality
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: const Icon(Icons.delete,
-                                          color: Colors.red),
-                                      onPressed: () {
-                                        context
-                                            .read<ListReportsCubit>()
-                                            .deleteReport(
-                                              report.id!,
-                                              selectedType!,
-                                            );
-                                      },
-                                    ),
-                                  ],
+                      ? SingleChildScrollView(
+                          child: DataTable(
+                            columnSpacing: 20.0,
+                            headingRowColor: WidgetStateColor.resolveWith(
+                                (states) => Colors.grey[300]!),
+                            border: TableBorder.all(color: Colors.grey),
+                            columns: const [
+                              DataColumn(
+                                  label: Text('Title',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                              DataColumn(
+                                  label: Text('Uploaded Date',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                              DataColumn(
+                                  label: Text('Created By',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                              DataColumn(
+                                  label: Text('File',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                              DataColumn(
+                                  label: Text('Actions',
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold))),
+                            ],
+                            rows: state.reports!.map((report) {
+                              return DataRow(cells: [
+                                DataCell(Text(report.title)),
+                                DataCell(Text(formatDate(report.dateUploaded))),
+                                DataCell(Text(report.createdBy)),
+                                DataCell(Text(report.link)),
+                                DataCell(
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.edit),
+                                        onPressed: () {
+                                          // Edit functionality
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.delete,
+                                            color: Colors.red),
+                                        onPressed: () {
+                                          context
+                                              .read<ListReportsCubit>()
+                                              .deleteReport(
+                                                report.id!,
+                                                selectedType!,
+                                              );
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ]);
-                          }).toList(),
+                              ]);
+                            }).toList(),
+                          ),
                         )
                       : const Center(child: Text('No reports available')),
                 ),

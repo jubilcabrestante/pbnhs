@@ -13,7 +13,7 @@ _$ListReportsModelImpl _$$ListReportsModelImplFromJson(
       type: json['type'] as String,
       title: json['title'] as String,
       link: json['link'] as String,
-      dateUploaded: DateTime.parse(json['dateUploaded'] as String),
+      dateUploaded: const TimestampConverter().fromJson(json['dateUploaded']),
       createdBy: json['createdBy'] as String,
     );
 
@@ -24,6 +24,6 @@ Map<String, dynamic> _$$ListReportsModelImplToJson(
       'type': instance.type,
       'title': instance.title,
       'link': instance.link,
-      'dateUploaded': instance.dateUploaded.toIso8601String(),
+      'dateUploaded': const TimestampConverter().toJson(instance.dateUploaded),
       'createdBy': instance.createdBy,
     };
