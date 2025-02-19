@@ -46,8 +46,8 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Reports',
+                    Text(
+                      '$selectedType Reports',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
@@ -85,6 +85,10 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                             DataColumn(
+                                label: Text('File',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold))),
+                            DataColumn(
                                 label: Text('Actions',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
@@ -94,6 +98,7 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                               DataCell(Text(report.title)),
                               DataCell(Text(formatDate(report.dateUploaded))),
                               DataCell(Text(report.createdBy)),
+                              DataCell(Text(report.link)),
                               DataCell(
                                 Row(
                                   children: [
