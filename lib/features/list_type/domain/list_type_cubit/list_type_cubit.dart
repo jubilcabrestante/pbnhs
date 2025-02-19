@@ -17,7 +17,7 @@ class ListTypeCubit extends Cubit<ListTypeState> {
       if (types.isNotEmpty) {
         emit(state.copyWith(
           isSuccess: true,
-          typeModel: types, // ✅ Store all types
+          typeModel: types,
           isLoading: false,
         ));
       } else {
@@ -29,9 +29,5 @@ class ListTypeCubit extends Cubit<ListTypeState> {
         isLoading: false,
       ));
     }
-  }
-
-  void selectType(TypeModel type) {
-    emit(state.copyWith(selectedType: type)); // ✅ Set selected type
   }
 }

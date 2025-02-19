@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:pbnhs/core/models/user_model/user_model.dart'; // Import UserModel
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart'; // Import UserModel
 
 part 'account_state.freezed.dart';
 

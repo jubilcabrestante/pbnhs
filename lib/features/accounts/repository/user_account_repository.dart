@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pbnhs/core/models/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 import 'package:pbnhs/features/accounts/domain/i_user_account_repo.dart';
 
 class UserAccountRepository implements IUserAccountRepository {
@@ -53,12 +53,7 @@ class UserAccountRepository implements IUserAccountRepository {
       }).toList();
       log('$users');
 
-      List<UserModel> filteredUsers = users
-          .where(
-              (user) => user.role != 'super-admin') // Compare the role string
-          .toList();
-
-      return filteredUsers;
+      return users;
     } catch (e) {
       log("Failed to fetch users: ${e.toString()}");
       rethrow;

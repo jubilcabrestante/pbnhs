@@ -1,4 +1,4 @@
-import 'package:pbnhs/core/models/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 
 abstract class IUserAccountRepository {
   Future<void> createUserWithEmailAndPassword(UserModel user, String password);

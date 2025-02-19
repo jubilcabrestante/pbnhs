@@ -2,34 +2,35 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
-import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
-import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
-import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
-import 'package:pbnhs/features/accounts/presentation/account_dialog.dart';
+import 'package:pbnhs/core/utils/date.dart';
+import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart';
+import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
+import 'package:pbnhs/features/list_reports/presentation/list_reports_dialog.dart';
 
 @RoutePage()
-class AccountsScreen extends StatefulWidget {
-  const AccountsScreen({super.key});
+class ListReportsScreen extends StatefulWidget {
+  final String selectedType;
+  const ListReportsScreen({super.key, required this.selectedType});
 
   @override
-  State<AccountsScreen> createState() => _AccountsScreenState();
+  State<ListReportsScreen> createState() => _ListReportsScreenState();
 }
 
-class _AccountsScreenState extends State<AccountsScreen> {
+class _ListReportsScreenState extends State<ListReportsScreen> {
+  String? selectedType;
+
   @override
   void initState() {
     super.initState();
-    // Fetch users when the screen is first loaded
-    context.read<AccountCubit>().getUsers();
+    selectedType = widget.selectedType;
+    context.read<ListReportsCubit>().getReports(selectedType!);
   }
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<AccountCubit, AccountState>(
+    return BlocConsumer<ListReportsCubit, ListReportsState>(
       listener: (context, state) {
-        if (state.isSuccess) {
-          context.read<AccountCubit>().getUsers(); // Refresh users list
-        } else if (state.errorMessage != null) {
+        if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage!)),
           );
@@ -46,17 +47,17 @@ class _AccountsScreenState extends State<AccountsScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text(
-                      'Accounts',
+                      'Reports',
                       style:
                           TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     CustomButton(
-                      text: 'Add Account',
+                      text: 'Submit Report',
                       onTap: () {
                         showDialog(
-                          barrierDismissible: false,
                           context: context,
-                          builder: (context) => const AccountDialog(),
+                          builder: (context) =>
+                              ListReportsDialog(selectedType: selectedType!),
                         );
                       },
                     ),
@@ -64,24 +65,23 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 ),
                 const SizedBox(height: 10),
                 Expanded(
-                  child: state.users != null && state.users!.isNotEmpty
+                  child: state.reports != null && state.reports!.isNotEmpty
                       ? DataTable(
-                          columnSpacing: 20.0, // Adjust spacing
+                          columnSpacing: 20.0,
                           headingRowColor: WidgetStateColor.resolveWith(
                               (states) => Colors.grey[300]!),
-                          border:
-                              TableBorder.all(color: Colors.grey), // Add border
+                          border: TableBorder.all(color: Colors.grey),
                           columns: const [
                             DataColumn(
-                                label: Text('Name',
+                                label: Text('Title',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                             DataColumn(
-                                label: Text('Email',
+                                label: Text('Uploaded Date',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                             DataColumn(
-                                label: Text('Role',
+                                label: Text('Created By',
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                             DataColumn(
@@ -89,24 +89,30 @@ class _AccountsScreenState extends State<AccountsScreen> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                           ],
-                          rows: state.users!.map((user) {
+                          rows: state.reports!.map((report) {
                             return DataRow(cells: [
-                              DataCell(Text(user.name)),
-                              DataCell(Text(user.email)),
-                              DataCell(Text(user.role)),
+                              DataCell(Text(report.title)),
+                              DataCell(Text(formatDate(report.dateUploaded))),
+                              DataCell(Text(report.createdBy)),
                               DataCell(
                                 Row(
                                   children: [
                                     IconButton(
                                       icon: const Icon(Icons.edit),
                                       onPressed: () {
-                                        _showEditDialog(user);
+                                        // Edit functionality
                                       },
                                     ),
                                     IconButton(
-                                      icon: const Icon(Icons.delete),
+                                      icon: const Icon(Icons.delete,
+                                          color: Colors.red),
                                       onPressed: () {
-                                        _deleteUser(user.uid);
+                                        context
+                                            .read<ListReportsCubit>()
+                                            .deleteReport(
+                                              report.id!,
+                                              selectedType!,
+                                            );
                                       },
                                     ),
                                   ],
@@ -115,55 +121,11 @@ class _AccountsScreenState extends State<AccountsScreen> {
                             ]);
                           }).toList(),
                         )
-                      : const Center(child: Text('No users available')),
+                      : const Center(child: Text('No reports available')),
                 ),
               ],
             ),
           ),
-        );
-      },
-    );
-  }
-
-  // Function to show the edit dialog
-  void _showEditDialog(UserModel user) {
-    showDialog(
-      context: context,
-      builder: (context) => AccountDialog(user: user), // Pass the actual user
-    );
-  }
-
-  // Function to delete a user
-  void _deleteUser(String? uid) {
-    if (uid == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('User ID is null, cannot delete account.')),
-      );
-      return;
-    }
-
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Delete Account'),
-          content: const Text('Are you sure you want to delete this account?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                context.read<AccountCubit>().deleteUser(uid);
-                Navigator.of(context).pop();
-              },
-              child: const Text('Delete'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-          ],
         );
       },
     );

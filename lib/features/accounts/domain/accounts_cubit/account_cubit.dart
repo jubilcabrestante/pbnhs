@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
-import 'package:pbnhs/core/models/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 import 'package:pbnhs/features/accounts/repository/user_account_repository.dart';
 
 class AccountCubit extends Cubit<AccountState> {
@@ -18,7 +18,6 @@ class AccountCubit extends Cubit<AccountState> {
       emit(state.copyWith(
           isLoading: false, isSuccess: true, users: updatedUsers));
 
-      // Reset isSuccess to prevent infinite loop
       emit(state.copyWith(isSuccess: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));

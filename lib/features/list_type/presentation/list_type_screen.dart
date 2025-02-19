@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pbnhs/app/routes/app_router.gr.dart';
 import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_cubit.dart';
 import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_state.dart';
 
@@ -16,7 +19,7 @@ class _ListTypeScreenState extends State<ListTypeScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ListTypeCubit>().fetchTypes(); // ✅ Fetch on screen load
+    context.read<ListTypeCubit>().fetchTypes();
   }
 
   @override
@@ -60,7 +63,10 @@ class _ListTypeScreenState extends State<ListTypeScreen> {
 
                   return GestureDetector(
                     onTap: () {
-                      // Handle tap action if needed
+                      final selectedType = allTypes[index];
+                      log('Selected type: $selectedType');
+                      context.router
+                          .push(ListReportsRoute(selectedType: selectedType));
                     },
                     child: LayoutBuilder(
                       // ✅ Ensures the Container sizes itself within its parent

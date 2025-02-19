@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
 import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
 import 'package:pbnhs/core/enum/user_roles.dart';
-import 'package:pbnhs/core/models/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 import 'package:pbnhs/core/models/user_roles/user_roles_model.dart';
 import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
