@@ -122,6 +122,46 @@ class ListReportsCubit extends Cubit<ListReportsState> {
     }
   }
 
+  Future<void> updateReport({
+    required String reportId,
+    required String title,
+    required String type,
+    File? file,
+  }) async {
+    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
+
+    try {
+      String? fileUrl;
+      if (file != null) {
+        fileUrl = await uploadFile(file);
+      }
+
+      final updatedReport = ListReportsModel(
+        id: reportId,
+        title: title,
+        type: type,
+        dateUploaded: DateTime.now(),
+        createdBy: '', // Keep previous createdBy
+        link: fileUrl ?? '',
+      );
+
+      await _listReportsRepository.updateReport(updatedReport);
+      final updatedReports = await _listReportsRepository.getReport(type);
+
+      emit(state.copyWith(
+        isLoading: false,
+        isSuccess: true,
+        reports: updatedReports,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
   Future<void> deleteReport(String reportId, String selectedType) async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));

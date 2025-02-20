@@ -6,6 +6,7 @@ import 'package:pbnhs/core/utils/date.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
 import 'package:pbnhs/features/list_reports/presentation/list_reports_dialog.dart';
+import 'package:pbnhs/features/list_reports/presentation/list_reports_edit_dialog.dart';
 
 @RoutePage()
 class ListReportsScreen extends StatefulWidget {
@@ -121,7 +122,16 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                       IconButton(
                                         icon: const Icon(Icons.edit),
                                         onPressed: () {
-                                          // Edit functionality
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) =>
+                                                EditReportDialog(
+                                              selectedType: selectedType,
+                                              reportId: report.id!,
+                                              initialTitle: report.title,
+                                              initialFileLink: report.link,
+                                            ),
+                                          );
                                         },
                                       ),
                                       IconButton(

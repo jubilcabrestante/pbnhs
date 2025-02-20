@@ -20,13 +20,13 @@ ListReportsModel _$ListReportsModelFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$ListReportsModel {
-  String? get id => throw _privateConstructorUsedError;
+  String get id => throw _privateConstructorUsedError;
   String get type => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get link => throw _privateConstructorUsedError;
   @TimestampConverter()
   DateTime get dateUploaded =>
-      throw _privateConstructorUsedError; // Use custom converter
+      throw _privateConstructorUsedError; // Custom converter
   String get createdBy => throw _privateConstructorUsedError;
 
   /// Serializes this ListReportsModel to a JSON map.
@@ -46,7 +46,7 @@ abstract class $ListReportsModelCopyWith<$Res> {
       _$ListReportsModelCopyWithImpl<$Res, ListReportsModel>;
   @useResult
   $Res call(
-      {String? id,
+      {String id,
       String type,
       String title,
       String link,
@@ -69,7 +69,7 @@ class _$ListReportsModelCopyWithImpl<$Res, $Val extends ListReportsModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
+    Object? id = null,
     Object? type = null,
     Object? title = null,
     Object? link = null,
@@ -77,10 +77,10 @@ class _$ListReportsModelCopyWithImpl<$Res, $Val extends ListReportsModel>
     Object? createdBy = null,
   }) {
     return _then(_value.copyWith(
-      id: freezed == id
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -114,7 +114,7 @@ abstract class _$$ListReportsModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String? id,
+      {String id,
       String type,
       String title,
       String link,
@@ -135,7 +135,7 @@ class __$$ListReportsModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? id = freezed,
+    Object? id = null,
     Object? type = null,
     Object? title = null,
     Object? link = null,
@@ -143,10 +143,10 @@ class __$$ListReportsModelImplCopyWithImpl<$Res>
     Object? createdBy = null,
   }) {
     return _then(_$ListReportsModelImpl(
-      id: freezed == id
+      id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
-              as String?,
+              as String,
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -175,7 +175,7 @@ class __$$ListReportsModelImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$ListReportsModelImpl implements _ListReportsModel {
   const _$ListReportsModelImpl(
-      {this.id,
+      {required this.id,
       required this.type,
       required this.title,
       required this.link,
@@ -186,7 +186,7 @@ class _$ListReportsModelImpl implements _ListReportsModel {
       _$$ListReportsModelImplFromJson(json);
 
   @override
-  final String? id;
+  final String id;
   @override
   final String type;
   @override
@@ -196,7 +196,7 @@ class _$ListReportsModelImpl implements _ListReportsModel {
   @override
   @TimestampConverter()
   final DateTime dateUploaded;
-// Use custom converter
+// Custom converter
   @override
   final String createdBy;
 
@@ -244,7 +244,7 @@ class _$ListReportsModelImpl implements _ListReportsModel {
 
 abstract class _ListReportsModel implements ListReportsModel {
   const factory _ListReportsModel(
-      {final String? id,
+      {required final String id,
       required final String type,
       required final String title,
       required final String link,
@@ -255,7 +255,7 @@ abstract class _ListReportsModel implements ListReportsModel {
       _$ListReportsModelImpl.fromJson;
 
   @override
-  String? get id;
+  String get id;
   @override
   String get type;
   @override
@@ -264,7 +264,7 @@ abstract class _ListReportsModel implements ListReportsModel {
   String get link;
   @override
   @TimestampConverter()
-  DateTime get dateUploaded; // Use custom converter
+  DateTime get dateUploaded; // Custom converter
   @override
   String get createdBy;
 

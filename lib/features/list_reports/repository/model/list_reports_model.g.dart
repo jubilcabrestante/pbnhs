@@ -9,7 +9,7 @@ part of 'list_reports_model.dart';
 _$ListReportsModelImpl _$$ListReportsModelImplFromJson(
         Map<String, dynamic> json) =>
     _$ListReportsModelImpl(
-      id: json['id'] as String?,
+      id: json['id'] as String,
       type: json['type'] as String,
       title: json['title'] as String,
       link: json['link'] as String,

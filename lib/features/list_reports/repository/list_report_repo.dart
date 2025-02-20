@@ -26,6 +26,16 @@ class ListReportsRepository {
     });
   }
 
+  Future<void> updateReport(ListReportsModel report) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception("User not authenticated");
+
+    await _firestore.collection('reports').doc(report.id).update({
+      ...report.toJson(),
+      'userId': user.uid, // Ensures userId remains consistent
+    });
+  }
+
   Future<void> deleteReport(String reportId) async {
     await _firestore.collection('reports').doc(reportId).delete();
   }

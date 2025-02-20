@@ -66,6 +66,16 @@ class _LoginScreenState extends State<LoginScreen> {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
+                              Align(
+                                alignment: Alignment.topLeft,
+                                child: Text(
+                                  'Login',
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 32),
+                                ),
+                              ),
+                              SizedBox(height: 20),
                               TextField(
                                 controller: _emailController,
                                 decoration: const InputDecoration(
@@ -73,13 +83,30 @@ class _LoginScreenState extends State<LoginScreen> {
                                   border: OutlineInputBorder(),
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 20),
                               TextField(
                                 controller: _passwordController,
                                 obscureText: true,
                                 decoration: const InputDecoration(
                                   labelText: 'Password',
                                   border: OutlineInputBorder(),
+                                ),
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    context.router.push(ForgotPasswordRoute());
+                                  },
+                                  child: Text(
+                                    'Forgot Password?',
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                      decoration: TextDecoration.underline,
+                                    ),
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 20),
