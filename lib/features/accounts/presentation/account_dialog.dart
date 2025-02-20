@@ -152,6 +152,7 @@ class _AccountDialogState extends State<AccountDialog> {
                                   accountCubit.updateUser(updatedUser);
                                 } else {
                                   final newUser = UserModel(
+                                    uid: '',
                                     name: _nameController.text,
                                     email: _emailController.text,
                                     role: _selectedRole
@@ -160,6 +161,7 @@ class _AccountDialogState extends State<AccountDialog> {
                                             .last ??
                                         '',
                                   );
+
                                   accountCubit.createAccount(
                                       newUser, _passwordController.text);
                                 }

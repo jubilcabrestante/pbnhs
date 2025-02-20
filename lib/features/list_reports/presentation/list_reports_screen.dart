@@ -17,13 +17,13 @@ class ListReportsScreen extends StatefulWidget {
 }
 
 class _ListReportsScreenState extends State<ListReportsScreen> {
-  String? selectedType;
+  late String selectedType;
 
   @override
   void initState() {
     super.initState();
     selectedType = widget.selectedType;
-    context.read<ListReportsCubit>().getReports(selectedType!);
+    context.read<ListReportsCubit>().getReports(selectedType);
   }
 
   @override
@@ -48,17 +48,32 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                   children: [
                     Text(
                       '$selectedType Reports',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18),
                     ),
                     CustomButton(
                       text: 'Submit Report',
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) =>
-                              ListReportsDialog(selectedType: selectedType!),
-                        );
+                      onTap: () async {
+                        final user = await context
+                            .read<ListReportsCubit>()
+                            .fetchUserDetails();
+
+                        if (!context.mounted) return;
+
+                        if (user != null) {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ListReportsDialog(
+                              selectedType: selectedType,
+                              user: user.name,
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Failed to fetch user details')),
+                          );
+                        }
                       },
                     ),
                   ],
@@ -113,12 +128,54 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                         icon: const Icon(Icons.delete,
                                             color: Colors.red),
                                         onPressed: () {
-                                          context
-                                              .read<ListReportsCubit>()
-                                              .deleteReport(
-                                                report.id!,
-                                                selectedType!,
-                                              );
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                              title: const Text(
+                                                  "Confirm Deletion"),
+                                              content: const Text(
+                                                  "Are you sure you want to delete this report?"),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.pop(context),
+                                                  child: const Text("Cancel"),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    if (report.id != null) {
+                                                      await context
+                                                          .read<
+                                                              ListReportsCubit>()
+                                                          .deleteReport(
+                                                              report.id!,
+                                                              selectedType);
+                                                      if (!context.mounted) {
+                                                        return;
+                                                      }
+                                                      Navigator.pop(context);
+                                                      context
+                                                          .read<
+                                                              ListReportsCubit>()
+                                                          .getReports(
+                                                              selectedType); // Refresh list
+                                                    } else {
+                                                      ScaffoldMessenger.of(
+                                                              context)
+                                                          .showSnackBar(
+                                                        const SnackBar(
+                                                            content: Text(
+                                                                'Report ID is missing')),
+                                                      );
+                                                    }
+                                                  },
+                                                  child: const Text("Delete",
+                                                      style: TextStyle(
+                                                          color: Colors.red)),
+                                                ),
+                                              ],
+                                            ),
+                                          );
                                         },
                                       ),
                                     ],

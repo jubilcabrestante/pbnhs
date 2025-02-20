@@ -9,8 +9,8 @@
 // coverage:ignore-file
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'package:auto_route/auto_route.dart' as _i5;
-import 'package:flutter/material.dart' as _i6;
+import 'package:auto_route/auto_route.dart' as _i6;
+import 'package:flutter/material.dart' as _i7;
 import 'package:pbnhs/app/app_screen.dart' as _i2;
 import 'package:pbnhs/features/accounts/presentation/accounts_screen.dart'
     as _i1;
@@ -18,16 +18,18 @@ import 'package:pbnhs/features/list_reports/presentation/list_reports_screen.dar
     as _i3;
 import 'package:pbnhs/features/list_type/presentation/list_type_screen.dart'
     as _i4;
+import 'package:pbnhs/features/onboarding%20presentations/login/presentation/login_screen.dart'
+    as _i5;
 
 /// generated route for
 /// [_i1.AccountsScreen]
-class AccountsRoute extends _i5.PageRouteInfo<void> {
-  const AccountsRoute({List<_i5.PageRouteInfo>? children})
+class AccountsRoute extends _i6.PageRouteInfo<void> {
+  const AccountsRoute({List<_i6.PageRouteInfo>? children})
     : super(AccountsRoute.name, initialChildren: children);
 
   static const String name = 'AccountsRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i6.PageInfo page = _i6.PageInfo(
     name,
     builder: (data) {
       return const _i1.AccountsScreen();
@@ -37,13 +39,13 @@ class AccountsRoute extends _i5.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i2.AppScreen]
-class AppRoute extends _i5.PageRouteInfo<void> {
-  const AppRoute({List<_i5.PageRouteInfo>? children})
+class AppRoute extends _i6.PageRouteInfo<void> {
+  const AppRoute({List<_i6.PageRouteInfo>? children})
     : super(AppRoute.name, initialChildren: children);
 
   static const String name = 'AppRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i6.PageInfo page = _i6.PageInfo(
     name,
     builder: (data) {
       return const _i2.AppScreen();
@@ -53,11 +55,11 @@ class AppRoute extends _i5.PageRouteInfo<void> {
 
 /// generated route for
 /// [_i3.ListReportsScreen]
-class ListReportsRoute extends _i5.PageRouteInfo<ListReportsRouteArgs> {
+class ListReportsRoute extends _i6.PageRouteInfo<ListReportsRouteArgs> {
   ListReportsRoute({
-    _i6.Key? key,
+    _i7.Key? key,
     required String selectedType,
-    List<_i5.PageRouteInfo>? children,
+    List<_i6.PageRouteInfo>? children,
   }) : super(
          ListReportsRoute.name,
          args: ListReportsRouteArgs(key: key, selectedType: selectedType),
@@ -66,7 +68,7 @@ class ListReportsRoute extends _i5.PageRouteInfo<ListReportsRouteArgs> {
 
   static const String name = 'ListReportsRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i6.PageInfo page = _i6.PageInfo(
     name,
     builder: (data) {
       final args = data.argsAs<ListReportsRouteArgs>();
@@ -81,7 +83,7 @@ class ListReportsRoute extends _i5.PageRouteInfo<ListReportsRouteArgs> {
 class ListReportsRouteArgs {
   const ListReportsRouteArgs({this.key, required this.selectedType});
 
-  final _i6.Key? key;
+  final _i7.Key? key;
 
   final String selectedType;
 
@@ -93,16 +95,32 @@ class ListReportsRouteArgs {
 
 /// generated route for
 /// [_i4.ListTypeScreen]
-class ListTypeRoute extends _i5.PageRouteInfo<void> {
-  const ListTypeRoute({List<_i5.PageRouteInfo>? children})
+class ListTypeRoute extends _i6.PageRouteInfo<void> {
+  const ListTypeRoute({List<_i6.PageRouteInfo>? children})
     : super(ListTypeRoute.name, initialChildren: children);
 
   static const String name = 'ListTypeRoute';
 
-  static _i5.PageInfo page = _i5.PageInfo(
+  static _i6.PageInfo page = _i6.PageInfo(
     name,
     builder: (data) {
       return const _i4.ListTypeScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [_i5.LoginScreen]
+class LoginRoute extends _i6.PageRouteInfo<void> {
+  const LoginRoute({List<_i6.PageRouteInfo>? children})
+    : super(LoginRoute.name, initialChildren: children);
+
+  static const String name = 'LoginRoute';
+
+  static _i6.PageInfo page = _i6.PageInfo(
+    name,
+    builder: (data) {
+      return const _i5.LoginScreen();
     },
   );
 }

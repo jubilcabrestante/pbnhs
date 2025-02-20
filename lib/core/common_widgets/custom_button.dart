@@ -8,6 +8,7 @@ class CustomButton extends StatelessWidget {
   final double borderRadius;
   final EdgeInsets padding;
   final TextStyle? textStyle;
+  final Widget? child; // ✅ Optional child widget
 
   const CustomButton({
     super.key,
@@ -17,13 +18,13 @@ class CustomButton extends StatelessWidget {
     this.borderRadius = 15.0,
     this.padding = const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
     this.textStyle,
+    this.child, // ✅ New child parameter
   });
 
   @override
   Widget build(BuildContext context) {
     return MouseRegion(
-      // 👈 Wrap with MouseRegion to change cursor
-      cursor: SystemMouseCursors.click, // 👈 Change cursor to hand pointer
+      cursor: SystemMouseCursors.click,
       child: GestureDetector(
         onTap: onTap,
         child: Container(
@@ -33,15 +34,16 @@ class CustomButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(borderRadius),
           ),
           alignment: Alignment.center,
-          child: Text(
-            text,
-            style: textStyle ??
-                const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-          ),
+          child: child ??
+              Text(
+                text,
+                style: textStyle ??
+                    const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+              ),
         ),
       ),
     );

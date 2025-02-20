@@ -1,15 +1,18 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pbnhs/core/repository/user_auth_repo.dart';
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
+import 'package:pbnhs/features/onboarding%20presentations/login/domain/i_user_auth_repo.dart';
 
-class UserRepository implements UserAuthRepository {
+class UserAuthRepository implements IUserAuthRepository {
   final FirebaseAuth _firebaseAuth;
+  final FirebaseFirestore _firestore;
 
-  UserRepository({
+  UserAuthRepository({
     FirebaseAuth? firebaseAuth,
     FirebaseFirestore? firestore,
-  }) : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance;
+  })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
+        _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
   Stream<User?> get user {
@@ -17,10 +20,14 @@ class UserRepository implements UserAuthRepository {
   }
 
   @override
-  Future<void> signIn(String email, String password) async {
+  Future<User?> signIn(String email, String password) async {
     try {
-      await _firebaseAuth.signInWithEmailAndPassword(
-          email: email, password: password);
+      UserCredential userCredential =
+          await _firebaseAuth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return userCredential.user;
     } catch (e) {
       log("Sign-in failed: ${e.toString()}");
       rethrow;
@@ -51,7 +58,6 @@ class UserRepository implements UserAuthRepository {
   Future<void> updatePassword(String newPassword) async {
     try {
       User? user = _firebaseAuth.currentUser;
-
       if (user != null) {
         await user.updatePassword(newPassword);
       } else {
@@ -60,6 +66,23 @@ class UserRepository implements UserAuthRepository {
     } catch (e) {
       log("Password update failed: ${e.toString()}");
       rethrow;
+    }
+  }
+
+  @override
+  Future<UserModel> getUserDetails(String uid) async {
+    try {
+      DocumentSnapshot userDoc =
+          await _firestore.collection('admin').doc(uid).get();
+
+      if (userDoc.exists) {
+        return UserModel.fromDocument(userDoc);
+      } else {
+        throw Exception("User not found");
+      }
+    } catch (e) {
+      log("Error fetching user: $e");
+      throw Exception("Failed to retrieve user details.");
     }
   }
 }

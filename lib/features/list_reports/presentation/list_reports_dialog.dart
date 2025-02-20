@@ -5,12 +5,17 @@ import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
 import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
-import 'package:pbnhs/features/list_reports/repository/model/list_reports_model.dart';
+import 'dart:io';
 
 class ListReportsDialog extends StatefulWidget {
   final String selectedType;
+  final String user;
 
-  const ListReportsDialog({super.key, required this.selectedType});
+  const ListReportsDialog({
+    super.key,
+    required this.selectedType,
+    required this.user,
+  });
 
   @override
   State<ListReportsDialog> createState() => _ListReportsDialogState();
@@ -19,6 +24,25 @@ class ListReportsDialog extends StatefulWidget {
 class _ListReportsDialogState extends State<ListReportsDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _title = TextEditingController();
+  File? _selectedFile;
+  String? _selectedFileName;
+
+  Future<void> _pickFile() async {
+    final result = await context.read<ListReportsCubit>().selectFile();
+    if (result != null) {
+      setState(() {
+        _selectedFile = result;
+        _selectedFileName = result.path.split('/').last;
+      });
+    }
+  }
+
+  void _removeFile() {
+    setState(() {
+      _selectedFile = null;
+      _selectedFileName = null;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +78,30 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                   validator: (value) =>
                       Validators.validateField(value, 'Title'),
                 ),
+                const SizedBox(height: 10),
+                if (_selectedFileName != null)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Selected File: $_selectedFileName',
+                          style: const TextStyle(
+                              fontSize: 14, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close, size: 20),
+                        onPressed: _removeFile,
+                      ),
+                    ],
+                  ),
+                const SizedBox(height: 10),
+                CustomButton(
+                  text: 'Select File',
+                  onTap: _pickFile,
+                ),
                 const SizedBox(height: 20),
                 BlocConsumer<ListReportsCubit, ListReportsState>(
                   listener: (context, state) {
@@ -70,25 +118,16 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                         ? const CircularProgressIndicator()
                         : CustomButton(
                             text: 'Submit Report',
-                            onTap: () {
+                            onTap: () async {
                               if (_formKey.currentState!.validate()) {
-                                final report = ListReportsModel(
-                                  title: _title.text,
-                                  type: widget
-                                      .selectedType, // Use the selectedType passed to the dialog
-                                  dateUploaded: DateTime
-                                      .now(), // Set the current timestamp
-                                  createdBy: "User",
-                                  link:
-                                      '', // Replace with actual user info if available
-                                );
-
-                                context
-                                    .read<ListReportsCubit>()
-                                    .addReport(report, widget.selectedType);
+                                context.read<ListReportsCubit>().addReport(
+                                      title: _title.text,
+                                      type: widget.selectedType,
+                                      createdBy: widget.user,
+                                      file: _selectedFile, // Nullable file
+                                    );
                               }
-                            },
-                          );
+                            });
                   },
                 ),
               ],

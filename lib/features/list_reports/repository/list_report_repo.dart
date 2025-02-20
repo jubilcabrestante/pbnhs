@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pbnhs/features/list_reports/repository/model/list_reports_model.dart';
 
 class ListReportsRepository {
@@ -16,7 +17,13 @@ class ListReportsRepository {
   }
 
   Future<void> addReport(ListReportsModel report) async {
-    await _firestore.collection('reports').add(report.toJson());
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) throw Exception("User not authenticated");
+
+    await _firestore.collection('reports').add({
+      ...report.toJson(),
+      'userId': user.uid, // ✅ Ensure userId is stored in Firestore
+    });
   }
 
   Future<void> deleteReport(String reportId) async {

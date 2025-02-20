@@ -73,7 +73,18 @@ class UserAccountRepository implements IUserAccountRepository {
   @override
   Future<void> deleteUser(String uid) async {
     try {
+      // ✅ Delete user from Firestore
       await _firestore.collection('admin').doc(uid).delete();
+      log("User deleted from Firestore: $uid");
+
+      // ✅ Delete user from Firebase Authentication
+      User? user = _firebaseAuth.currentUser;
+      if (user != null && user.uid == uid) {
+        await user.delete(); // Delete only if the user is authenticated
+        log("User deleted from Firebase Auth: $uid");
+      } else {
+        log("User deletion from Firebase Auth failed: Not authenticated");
+      }
     } catch (e) {
       log("Failed to delete user: ${e.toString()}");
       rethrow;

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/app/routes/app_router.dart';
+import 'package:pbnhs/core/repository/user_repository.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
 import 'package:pbnhs/features/accounts/repository/user_account_repository.dart';
@@ -8,6 +9,7 @@ import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart
 import 'package:pbnhs/features/list_reports/repository/list_report_repo.dart';
 import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_cubit.dart';
 import 'package:pbnhs/features/list_type/repository/type_repo.dart';
+import 'package:pbnhs/features/onboarding%20presentations/login/domain/cubit/user_auth_cubit.dart';
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
@@ -23,7 +25,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) => AccountCubit(UserAccountRepository())),
         BlocProvider(
-            create: (context) => ListReportsCubit(ListReportsRepository())),
+            create: (context) => ListReportsCubit(
+                ListReportsRepository(), UserAuthRepository())),
+        BlocProvider(
+          create: (context) => UserAuthCubit(UserAuthRepository()),
+        )
       ],
       child: MaterialApp.router(
         debugShowCheckedModeBanner: false,

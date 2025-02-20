@@ -7,12 +7,11 @@ part 'list_reports_model.g.dart';
 @freezed
 class ListReportsModel with _$ListReportsModel {
   const factory ListReportsModel({
-    String? id,
+    required String id,
     required String type,
     required String title,
     required String link,
-    @TimestampConverter()
-    required DateTime dateUploaded, // Use custom converter
+    @TimestampConverter() required DateTime dateUploaded, // Custom converter
     required String createdBy,
   }) = _ListReportsModel;
 
@@ -25,10 +24,25 @@ class ListReportsModel with _$ListReportsModel {
     if (data == null) {
       throw Exception("Document data is null");
     }
-    return ListReportsModel.fromJson({
-      'id': doc.id,
-      ...data,
-    });
+
+    return ListReportsModel(
+      id: doc.id,
+      type: data['type'] as String? ?? '',
+      title: data['title'] as String? ?? '',
+      link: data['link'] as String? ?? '',
+      dateUploaded: _parseDate(data['dateUploaded']),
+      createdBy: data['createdBy'] as String? ?? '',
+    );
+  }
+
+  static DateTime _parseDate(dynamic date) {
+    if (date is Timestamp) {
+      return date.toDate();
+    } else if (date is String) {
+      return DateTime.tryParse(date) ?? DateTime.now();
+    } else {
+      return DateTime.now();
+    }
   }
 }
 
@@ -41,13 +55,12 @@ class TimestampConverter implements JsonConverter<DateTime, dynamic> {
     if (json is Timestamp) {
       return json.toDate(); // Convert Firestore Timestamp to DateTime
     } else if (json is String) {
-      return DateTime.parse(json); // In case Firestore stored it as a string
+      return DateTime.tryParse(json) ?? DateTime.now(); // Handle string dates
     } else {
       throw Exception("Invalid date format");
     }
   }
 
   @override
-  dynamic toJson(DateTime date) =>
-      Timestamp.fromDate(date); // Convert DateTime to Firestore Timestamp
+  dynamic toJson(DateTime date) => Timestamp.fromDate(date);
 }
