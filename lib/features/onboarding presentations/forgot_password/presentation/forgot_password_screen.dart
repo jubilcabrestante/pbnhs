@@ -37,7 +37,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         }
       },
       child: Scaffold(
-        backgroundColor: AppColors.secondarybackground.withOpacity(0.4),
+        backgroundColor: AppColors.secondarybackground.withValues(alpha: 0.4),
         body: Center(
           child: Container(
             width: MediaQuery.of(context).size.width * 0.3,
@@ -49,6 +49,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: () => context.router.back(),
+                  ),
+                ),
                 const Text(
                   'Forgot Password',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
