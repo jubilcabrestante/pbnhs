@@ -127,7 +127,7 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                             builder: (context) =>
                                                 EditReportDialog(
                                               selectedType: selectedType,
-                                              reportId: report.id!,
+                                              reportId: report.id,
                                               initialTitle: report.title,
                                               initialFileLink: report.link,
                                             ),
@@ -153,31 +153,20 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                                 ),
                                                 TextButton(
                                                   onPressed: () async {
-                                                    if (report.id != null) {
-                                                      await context
-                                                          .read<
-                                                              ListReportsCubit>()
-                                                          .deleteReport(
-                                                              report.id!,
-                                                              selectedType);
-                                                      if (!context.mounted) {
-                                                        return;
-                                                      }
-                                                      Navigator.pop(context);
-                                                      context
-                                                          .read<
-                                                              ListReportsCubit>()
-                                                          .getReports(
-                                                              selectedType); // Refresh list
-                                                    } else {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        const SnackBar(
-                                                            content: Text(
-                                                                'Report ID is missing')),
-                                                      );
+                                                    await context
+                                                        .read<
+                                                            ListReportsCubit>()
+                                                        .deleteReport(report.id,
+                                                            selectedType);
+                                                    if (!context.mounted) {
+                                                      return;
                                                     }
+                                                    Navigator.pop(context);
+                                                    context
+                                                        .read<
+                                                            ListReportsCubit>()
+                                                        .getReports(
+                                                            selectedType); // Refresh list
                                                   },
                                                   child: const Text("Delete",
                                                       style: TextStyle(

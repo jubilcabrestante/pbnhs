@@ -24,6 +24,7 @@ mixin _$UserModel {
   String get name => throw _privateConstructorUsedError;
   String get email => throw _privateConstructorUsedError;
   String get role => throw _privateConstructorUsedError;
+  bool get isNewUser => throw _privateConstructorUsedError;
 
   /// Serializes this UserModel to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -40,7 +41,8 @@ abstract class $UserModelCopyWith<$Res> {
   factory $UserModelCopyWith(UserModel value, $Res Function(UserModel) then) =
       _$UserModelCopyWithImpl<$Res, UserModel>;
   @useResult
-  $Res call({String uid, String name, String email, String role});
+  $Res call(
+      {String uid, String name, String email, String role, bool isNewUser});
 }
 
 /// @nodoc
@@ -62,6 +64,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? name = null,
     Object? email = null,
     Object? role = null,
+    Object? isNewUser = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -80,6 +83,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
               as String,
+      isNewUser: null == isNewUser
+          ? _value.isNewUser
+          : isNewUser // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -92,7 +99,8 @@ abstract class _$$UserModelImplCopyWith<$Res>
       __$$UserModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String uid, String name, String email, String role});
+  $Res call(
+      {String uid, String name, String email, String role, bool isNewUser});
 }
 
 /// @nodoc
@@ -112,6 +120,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? email = null,
     Object? role = null,
+    Object? isNewUser = null,
   }) {
     return _then(_$UserModelImpl(
       uid: null == uid
@@ -130,6 +139,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.role
           : role // ignore: cast_nullable_to_non_nullable
               as String,
+      isNewUser: null == isNewUser
+          ? _value.isNewUser
+          : isNewUser // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -141,7 +154,8 @@ class _$UserModelImpl implements _UserModel {
       {required this.uid,
       required this.name,
       required this.email,
-      required this.role});
+      required this.role,
+      this.isNewUser = true});
 
   factory _$UserModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$UserModelImplFromJson(json);
@@ -154,10 +168,13 @@ class _$UserModelImpl implements _UserModel {
   final String email;
   @override
   final String role;
+  @override
+  @JsonKey()
+  final bool isNewUser;
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, name: $name, email: $email, role: $role)';
+    return 'UserModel(uid: $uid, name: $name, email: $email, role: $role, isNewUser: $isNewUser)';
   }
 
   @override
@@ -168,12 +185,15 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.email, email) || other.email == email) &&
-            (identical(other.role, role) || other.role == role));
+            (identical(other.role, role) || other.role == role) &&
+            (identical(other.isNewUser, isNewUser) ||
+                other.isNewUser == isNewUser));
   }
 
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
-  int get hashCode => Object.hash(runtimeType, uid, name, email, role);
+  int get hashCode =>
+      Object.hash(runtimeType, uid, name, email, role, isNewUser);
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.
@@ -196,7 +216,8 @@ abstract class _UserModel implements UserModel {
       {required final String uid,
       required final String name,
       required final String email,
-      required final String role}) = _$UserModelImpl;
+      required final String role,
+      final bool isNewUser}) = _$UserModelImpl;
 
   factory _UserModel.fromJson(Map<String, dynamic> json) =
       _$UserModelImpl.fromJson;
@@ -209,6 +230,8 @@ abstract class _UserModel implements UserModel {
   String get email;
   @override
   String get role;
+  @override
+  bool get isNewUser;
 
   /// Create a copy of UserModel
   /// with the given fields replaced by the non-null parameter values.

@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$UserAuthState {
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isSuccess => throw _privateConstructorUsedError;
+  bool get isNewUser => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
   UserAuthModel? get userAuthModel => throw _privateConstructorUsedError;
 
@@ -37,6 +38,7 @@ abstract class $UserAuthStateCopyWith<$Res> {
   $Res call(
       {bool isLoading,
       bool isSuccess,
+      bool isNewUser,
       String? errorMessage,
       UserAuthModel? userAuthModel});
 
@@ -60,6 +62,7 @@ class _$UserAuthStateCopyWithImpl<$Res, $Val extends UserAuthState>
   $Res call({
     Object? isLoading = null,
     Object? isSuccess = null,
+    Object? isNewUser = null,
     Object? errorMessage = freezed,
     Object? userAuthModel = freezed,
   }) {
@@ -71,6 +74,10 @@ class _$UserAuthStateCopyWithImpl<$Res, $Val extends UserAuthState>
       isSuccess: null == isSuccess
           ? _value.isSuccess
           : isSuccess // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isNewUser: null == isNewUser
+          ? _value.isNewUser
+          : isNewUser // ignore: cast_nullable_to_non_nullable
               as bool,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
@@ -109,6 +116,7 @@ abstract class _$$UserAuthStateImplCopyWith<$Res>
   $Res call(
       {bool isLoading,
       bool isSuccess,
+      bool isNewUser,
       String? errorMessage,
       UserAuthModel? userAuthModel});
 
@@ -131,6 +139,7 @@ class __$$UserAuthStateImplCopyWithImpl<$Res>
   $Res call({
     Object? isLoading = null,
     Object? isSuccess = null,
+    Object? isNewUser = null,
     Object? errorMessage = freezed,
     Object? userAuthModel = freezed,
   }) {
@@ -142,6 +151,10 @@ class __$$UserAuthStateImplCopyWithImpl<$Res>
       isSuccess: null == isSuccess
           ? _value.isSuccess
           : isSuccess // ignore: cast_nullable_to_non_nullable
+              as bool,
+      isNewUser: null == isNewUser
+          ? _value.isNewUser
+          : isNewUser // ignore: cast_nullable_to_non_nullable
               as bool,
       errorMessage: freezed == errorMessage
           ? _value.errorMessage
@@ -161,6 +174,7 @@ class _$UserAuthStateImpl implements _UserAuthState {
   const _$UserAuthStateImpl(
       {this.isLoading = false,
       this.isSuccess = false,
+      this.isNewUser = false,
       this.errorMessage,
       this.userAuthModel});
 
@@ -171,13 +185,16 @@ class _$UserAuthStateImpl implements _UserAuthState {
   @JsonKey()
   final bool isSuccess;
   @override
+  @JsonKey()
+  final bool isNewUser;
+  @override
   final String? errorMessage;
   @override
   final UserAuthModel? userAuthModel;
 
   @override
   String toString() {
-    return 'UserAuthState(isLoading: $isLoading, isSuccess: $isSuccess, errorMessage: $errorMessage, userAuthModel: $userAuthModel)';
+    return 'UserAuthState(isLoading: $isLoading, isSuccess: $isSuccess, isNewUser: $isNewUser, errorMessage: $errorMessage, userAuthModel: $userAuthModel)';
   }
 
   @override
@@ -189,6 +206,8 @@ class _$UserAuthStateImpl implements _UserAuthState {
                 other.isLoading == isLoading) &&
             (identical(other.isSuccess, isSuccess) ||
                 other.isSuccess == isSuccess) &&
+            (identical(other.isNewUser, isNewUser) ||
+                other.isNewUser == isNewUser) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
             (identical(other.userAuthModel, userAuthModel) ||
@@ -196,8 +215,8 @@ class _$UserAuthStateImpl implements _UserAuthState {
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, isLoading, isSuccess, errorMessage, userAuthModel);
+  int get hashCode => Object.hash(runtimeType, isLoading, isSuccess, isNewUser,
+      errorMessage, userAuthModel);
 
   /// Create a copy of UserAuthState
   /// with the given fields replaced by the non-null parameter values.
@@ -212,6 +231,7 @@ abstract class _UserAuthState implements UserAuthState {
   const factory _UserAuthState(
       {final bool isLoading,
       final bool isSuccess,
+      final bool isNewUser,
       final String? errorMessage,
       final UserAuthModel? userAuthModel}) = _$UserAuthStateImpl;
 
@@ -219,6 +239,8 @@ abstract class _UserAuthState implements UserAuthState {
   bool get isLoading;
   @override
   bool get isSuccess;
+  @override
+  bool get isNewUser;
   @override
   String? get errorMessage;
   @override

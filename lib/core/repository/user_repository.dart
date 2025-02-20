@@ -19,6 +19,10 @@ class UserAuthRepository implements IUserAuthRepository {
     return _firebaseAuth.authStateChanges();
   }
 
+  Future<String?> getCurrentUserId() async {
+    return _firebaseAuth.currentUser?.uid;
+  }
+
   @override
   Future<User?> signIn(String email, String password) async {
     try {
@@ -30,6 +34,18 @@ class UserAuthRepository implements IUserAuthRepository {
       return userCredential.user;
     } catch (e) {
       log("Sign-in failed: ${e.toString()}");
+      rethrow;
+    }
+  }
+
+  Future<void> updateUserField(String userId, Map<String, dynamic> data) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .update(data);
+    } catch (e) {
+      log("Logout failed: ${e.toString()}");
       rethrow;
     }
   }
@@ -59,12 +75,23 @@ class UserAuthRepository implements IUserAuthRepository {
     try {
       User? user = _firebaseAuth.currentUser;
       if (user != null) {
+        // 🔐 Update password in Firebase Authentication
         await user.updatePassword(newPassword);
+
+        final userId = user.uid;
+        final userDocRef =
+            FirebaseFirestore.instance.collection('users').doc(userId);
+
+        // 🔄 Create or update 'isNewUser' field
+        await userDocRef.set(
+          {'isNewUser': false},
+          SetOptions(merge: true), // ✅ Creates if missing, updates if exists
+        );
       } else {
         throw Exception('User is not logged in');
       }
     } catch (e) {
-      log("Password update failed: ${e.toString()}");
+      log("❌ Password update failed: ${e.toString()}");
       rethrow;
     }
   }

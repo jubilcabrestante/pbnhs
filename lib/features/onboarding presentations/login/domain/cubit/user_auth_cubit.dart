@@ -12,12 +12,17 @@ class UserAuthCubit extends Cubit<UserAuthState> {
 
   Future<void> signIn(String email, String password) async {
     emit(state.copyWith(isLoading: true));
+    print("🔍 Attempting sign-in with email: $email");
+
     try {
       User? firebaseUser = await _userAuthRepository.signIn(email, password);
 
       if (firebaseUser != null) {
+        print("✅ Firebase user signed in: ${firebaseUser.uid}");
+
         UserModel userModel =
             await _userAuthRepository.getUserDetails(firebaseUser.uid);
+        print("🛠 Retrieved user details: ${userModel.toJson()}");
 
         UserAuthModel userAuth = UserAuthModel(
           user: userModel,
@@ -27,15 +32,17 @@ class UserAuthCubit extends Cubit<UserAuthState> {
         emit(state.copyWith(
           isSuccess: true,
           isLoading: false,
-          userAuthModel: userAuth, // ✅ Store user data
+          isNewUser: userModel.isNewUser, // ✅ Get isNewUser from UserModel
+          userAuthModel: userAuth,
         ));
+
+        print("🚀 isNewUser: ${userModel.isNewUser}");
       } else {
-        emit(state.copyWith(
-          isLoading: false,
-          errorMessage: "User authentication failed",
-        ));
+        print("❌ Login failed");
+        emit(state.copyWith(isLoading: false, errorMessage: "Login failed"));
       }
     } on FirebaseAuthException catch (e) {
+      print("🔥 FirebaseAuthException: ${e.message}");
       emit(state.copyWith(isLoading: false, errorMessage: e.message));
     }
   }

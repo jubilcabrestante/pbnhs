@@ -11,6 +11,7 @@ class UserModel with _$UserModel {
     required String name,
     required String email,
     required String role,
+    @Default(true) bool isNewUser, // Added isNewUser with a default value
   }) = _UserModel;
 
   factory UserModel.fromJson(Map<String, dynamic> json) =>
@@ -24,6 +25,11 @@ class UserModel with _$UserModel {
       throw Exception("Document data is null");
     }
 
-    return UserModel.fromJson({...data, 'uid': doc.id});
+    return UserModel.fromJson({
+      ...data,
+      'uid': doc.id,
+      'isNewUser':
+          data['isNewUser'] ?? true, // Ensure it defaults to true if missing
+    });
   }
 }

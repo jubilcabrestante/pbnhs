@@ -5,6 +5,7 @@ import 'package:pbnhs/app/routes/app_router.gr.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
 import 'package:pbnhs/core/constants/colors.dart';
 import 'package:pbnhs/features/onboarding%20presentations/login/domain/cubit/user_auth_cubit.dart';
+import '../../../../core/utils/validators.dart';
 import '../domain/cubit/user_auth_state.dart';
 
 @RoutePage()
@@ -18,14 +19,20 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return BlocListener<UserAuthCubit, UserAuthState>(
       listener: (context, state) {
         if (!mounted) return;
+
         if (state.isSuccess) {
-          context.router.replace(const AppRoute());
+          if (state.isNewUser) {
+            context.router.replace(const ChangePasswordRoute());
+          } else {
+            context.router.replace(const AppRoute());
+          }
         } else if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage!)),
@@ -63,82 +70,98 @@ class _LoginScreenState extends State<LoginScreen> {
                       builder: (context, state) {
                         return Padding(
                           padding: const EdgeInsets.all(25),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  'Login',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 32),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              TextField(
-                                controller: _emailController,
-                                decoration: const InputDecoration(
-                                  labelText: 'Email',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              TextField(
-                                controller: _passwordController,
-                                obscureText: true,
-                                decoration: const InputDecoration(
-                                  labelText: 'Password',
-                                  border: OutlineInputBorder(),
-                                ),
-                              ),
-                              Align(
-                                alignment: Alignment.centerRight,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    context.router.push(ForgotPasswordRoute());
-                                  },
+                          child: Form(
+                            key: _formKey, // Form key added
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Align(
+                                  alignment: Alignment.topLeft,
                                   child: Text(
-                                    'Forgot Password?',
+                                    'Login',
                                     style: TextStyle(
-                                      color: Colors.blue,
-                                      fontSize: 14,
                                       fontWeight: FontWeight.bold,
-                                      decoration: TextDecoration.underline,
+                                      fontSize: 32,
                                     ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              CustomButton(
-                                text: 'Login',
-                                onTap: state.isLoading
-                                    ? null
-                                    : () {
-                                        context.read<UserAuthCubit>().signIn(
-                                              _emailController.text.trim(),
-                                              _passwordController.text.trim(),
-                                            );
-                                      },
-                                child: state.isLoading
-                                    ? const SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: Colors.white,
-                                        ),
-                                      )
-                                    : const Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                const SizedBox(height: 20),
+                                TextFormField(
+                                  controller: _emailController,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Email',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  validator: (value) =>
+                                      Validators.validateField(value, 'Email'),
+                                ),
+                                const SizedBox(height: 20),
+                                TextFormField(
+                                  controller: _passwordController,
+                                  obscureText: true,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Password',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  validator: (value) =>
+                                      Validators.validateField(
+                                          value, 'Password'),
+                                ),
+                                const SizedBox(height: 10),
+                                Align(
+                                  alignment: Alignment.centerRight,
+                                  child: GestureDetector(
+                                    onTap: () {
+                                      context.router
+                                          .push(ForgotPasswordRoute());
+                                    },
+                                    child: Text(
+                                      'Forgot Password?',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                              ),
-                            ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 20),
+                                CustomButton(
+                                  text: 'Login',
+                                  onTap: state.isLoading
+                                      ? null
+                                      : () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            context
+                                                .read<UserAuthCubit>()
+                                                .signIn(
+                                                  _emailController.text.trim(),
+                                                  _passwordController.text
+                                                      .trim(),
+                                                );
+                                          }
+                                        },
+                                  child: state.isLoading
+                                      ? const SizedBox(
+                                          width: 20,
+                                          height: 20,
+                                          child: CircularProgressIndicator(
+                                            strokeWidth: 2,
+                                            color: Colors.white,
+                                          ),
+                                        )
+                                      : const Text(
+                                          'Login',
+                                          style: TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                ),
+                              ],
+                            ),
                           ),
                         );
                       },
