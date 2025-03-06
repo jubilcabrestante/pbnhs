@@ -28,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) {
         if (!mounted) return;
 
-        if (state.isSuccess) {
+        if (state.isSuccess && state.userAuthModel?.isAuthenticated == true) {
           if (state.isNewUser) {
             context.router.replace(const ChangePasswordRoute());
           } else {
@@ -111,13 +111,15 @@ class _LoginScreenState extends State<LoginScreen> {
                                       ),
                                       onPressed: () {
                                         setState(() {
-                                          _isPasswordVisible = !_isPasswordVisible;
+                                          _isPasswordVisible =
+                                              !_isPasswordVisible;
                                         });
                                       },
                                     ),
                                   ),
                                   validator: (value) =>
-                                      Validators.validateField(value, 'Password'),
+                                      Validators.validateField(
+                                          value, 'Password'),
                                 ),
                                 const SizedBox(height: 10),
                                 if (state.errorMessage != null)
@@ -135,7 +137,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                   alignment: Alignment.centerRight,
                                   child: GestureDetector(
                                     onTap: () {
-                                      context.router.replace(ForgotPasswordRoute());
+                                      context.router
+                                          .replace(ForgotPasswordRoute());
                                     },
                                     child: Text(
                                       'Forgot Password?',
@@ -153,10 +156,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onTap: state.isLoading
                                       ? null
                                       : () {
-                                          if (_formKey.currentState!.validate()) {
-                                            context.read<UserAuthCubit>().signIn(
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            context
+                                                .read<UserAuthCubit>()
+                                                .signIn(
                                                   _emailController.text.trim(),
-                                                  _passwordController.text.trim(),
+                                                  _passwordController.text
+                                                      .trim(),
                                                 );
                                           }
                                         },

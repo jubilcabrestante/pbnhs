@@ -13,11 +13,19 @@ class UserAuthCubit extends Cubit<UserAuthState> {
   UserAuthCubit(this._userAuthRepository) : super(const UserAuthState());
 
   Future<void> signIn(String email, String password) async {
-    emit(state.copyWith(isLoading: true));
+    // Reset state before attempting sign-in
+    emit(const UserAuthState().copyWith(isLoading: true));
+
     log("🔍 Attempting sign-in with email: $email");
 
     try {
-      User? firebaseUser = await _userAuthRepository.signIn(email, password);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      User? firebaseUser = userCredential.user;
 
       if (firebaseUser != null) {
         log("✅ Firebase user signed in: ${firebaseUser.uid}");
@@ -34,31 +42,36 @@ class UserAuthCubit extends Cubit<UserAuthState> {
         emit(state.copyWith(
           isSuccess: true,
           isLoading: false,
-          isNewUser: userModel.isNewUser, // ✅ Get isNewUser from UserModel
+          isNewUser: userModel.isNewUser,
           userAuthModel: userAuth,
         ));
-
-        log("🚀 isNewUser: ${userModel.isNewUser}");
       } else {
-        log("❌ Login failed");
-        emit(state.copyWith(isLoading: false, errorMessage: "Login failed"));
+        log("❌ Login failed: Invalid credentials");
+        emit(const UserAuthState().copyWith(
+            isLoading: false, errorMessage: "Invalid email or password"));
       }
     } on FirebaseAuthException catch (e) {
       log("🔥 FirebaseAuthException: ${e.message}");
-      emit(state.copyWith(isLoading: false, errorMessage: e.message));
+      emit(const UserAuthState()
+          .copyWith(isLoading: false, errorMessage: e.message));
+    } catch (e) {
+      log("❌ Error: $e");
+      emit(const UserAuthState().copyWith(
+          isLoading: false, errorMessage: "An unexpected error occurred"));
     }
   }
 
   Future<void> changePassword(String newPassword) async {
-    emit(state.copyWith(isLoading: true, isSuccess: false, errorMessage: null));
+    emit(const UserAuthState().copyWith(isLoading: true));
 
     try {
       await _userAuthRepository.updatePassword(newPassword);
-
-      emit(state.copyWith(isLoading: false, isSuccess: true, isNewUser: false));
+      await _userAuthRepository.logOut(); // Force logout
+      emit(const UserAuthState().copyWith(isLoading: false, isSuccess: true));
     } catch (e) {
       log("Error: $e");
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
+      emit(const UserAuthState()
+          .copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 
