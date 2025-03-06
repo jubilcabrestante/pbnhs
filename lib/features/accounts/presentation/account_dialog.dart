@@ -32,7 +32,7 @@ class _AccountDialogState extends State<AccountDialog> {
       _emailController.text = widget.user!.email;
       _selectedRole = UserRole.values.firstWhere(
         (role) => role.toString().split('.').last == widget.user!.role,
-        orElse: () => UserRole.teacher,
+        orElse: () => UserRole.admin,
       );
     }
   }

@@ -1,12 +1,12 @@
-enum UserRole { teacher, superAdmin }
+enum UserRole { admin, superAdmin }
 
 extension UserRoleExtension on UserRole {
   static UserRole? fromString(String role) {
     switch (role) {
       case 'super-admin':
         return UserRole.superAdmin;
-      case 'teacher':
-        return UserRole.teacher;
+      case 'admin':
+        return UserRole.admin;
       default:
         return null; // Return null for unknown roles
     }

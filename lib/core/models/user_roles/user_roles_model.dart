@@ -1,9 +1,9 @@
 import 'package:pbnhs/core/enum/user_roles.dart';
 
 class UserRoles {
-  static const Map<UserRole, String> roleNames = {
-    UserRole.superAdmin: "Super-Admin",
-    UserRole.teacher: "teacher",
+  static final Map<UserRole, String> roleNames = {
+    UserRole.superAdmin: "super-admin",
+    UserRole.admin: "admin",
   };
 
   /// Get role name as a string
@@ -12,12 +12,12 @@ class UserRoles {
   }
 
   /// Check if a role has superAdministrative privileges
-  static bool issuperAdmin(UserRole role) {
+  static bool isSuperAdmin(UserRole role) {
     return role == UserRole.superAdmin;
   }
 
   /// Check if a role is a admin
-  static bool isTeacher(UserRole role) {
-    return role == UserRole.teacher;
+  static bool isadmin(UserRole role) {
+    return role == UserRole.admin;
   }
 }

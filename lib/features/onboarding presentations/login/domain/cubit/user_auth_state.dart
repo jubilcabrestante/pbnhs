@@ -8,7 +8,7 @@ class UserAuthState with _$UserAuthState {
   const factory UserAuthState({
     @Default(false) bool isLoading,
     @Default(false) bool isSuccess,
-    @Default(false) bool isNewUser,
+    @Default(true) bool isNewUser,
     String? errorMessage,
     UserAuthModel? userAuthModel,
   }) = _UserAuthState;

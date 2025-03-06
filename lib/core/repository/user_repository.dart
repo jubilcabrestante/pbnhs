@@ -38,18 +38,6 @@ class UserAuthRepository implements IUserAuthRepository {
     }
   }
 
-  Future<void> updateUserField(String userId, Map<String, dynamic> data) async {
-    try {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update(data);
-    } catch (e) {
-      log("Logout failed: ${e.toString()}");
-      rethrow;
-    }
-  }
-
   @override
   Future<void> logOut() async {
     try {
@@ -80,7 +68,7 @@ class UserAuthRepository implements IUserAuthRepository {
 
         final userId = user.uid;
         final userDocRef =
-            FirebaseFirestore.instance.collection('users').doc(userId);
+            FirebaseFirestore.instance.collection('admin').doc(userId);
 
         // 🔄 Create or update 'isNewUser' field
         await userDocRef.set(

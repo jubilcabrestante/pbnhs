@@ -63,7 +63,10 @@ class UserAccountRepository implements IUserAccountRepository {
   @override
   Future<void> saveUser(UserModel user) async {
     try {
-      await _firestore.collection('admin').doc(user.uid).set(user.toJson());
+      await _firestore
+          .collection('admin')
+          .doc(user.uid)
+          .set(user.toJson(), SetOptions(merge: true));
     } catch (e) {
       log("Failed to save user: ${e.toString()}");
       rethrow;
@@ -76,15 +79,6 @@ class UserAccountRepository implements IUserAccountRepository {
       // ✅ Delete user from Firestore
       await _firestore.collection('admin').doc(uid).delete();
       log("User deleted from Firestore: $uid");
-
-      // ✅ Delete user from Firebase Authentication
-      User? user = _firebaseAuth.currentUser;
-      if (user != null && user.uid == uid) {
-        await user.delete(); // Delete only if the user is authenticated
-        log("User deleted from Firebase Auth: $uid");
-      } else {
-        log("User deletion from Firebase Auth failed: Not authenticated");
-      }
     } catch (e) {
       log("Failed to delete user: ${e.toString()}");
       rethrow;

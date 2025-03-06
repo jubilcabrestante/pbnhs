@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/repository/user_repository.dart';
@@ -12,17 +14,17 @@ class UserAuthCubit extends Cubit<UserAuthState> {
 
   Future<void> signIn(String email, String password) async {
     emit(state.copyWith(isLoading: true));
-    print("🔍 Attempting sign-in with email: $email");
+    log("🔍 Attempting sign-in with email: $email");
 
     try {
       User? firebaseUser = await _userAuthRepository.signIn(email, password);
 
       if (firebaseUser != null) {
-        print("✅ Firebase user signed in: ${firebaseUser.uid}");
+        log("✅ Firebase user signed in: ${firebaseUser.uid}");
 
         UserModel userModel =
             await _userAuthRepository.getUserDetails(firebaseUser.uid);
-        print("🛠 Retrieved user details: ${userModel.toJson()}");
+        log("🛠 Retrieved user details: ${userModel.toJson()}");
 
         UserAuthModel userAuth = UserAuthModel(
           user: userModel,
@@ -36,14 +38,27 @@ class UserAuthCubit extends Cubit<UserAuthState> {
           userAuthModel: userAuth,
         ));
 
-        print("🚀 isNewUser: ${userModel.isNewUser}");
+        log("🚀 isNewUser: ${userModel.isNewUser}");
       } else {
-        print("❌ Login failed");
+        log("❌ Login failed");
         emit(state.copyWith(isLoading: false, errorMessage: "Login failed"));
       }
     } on FirebaseAuthException catch (e) {
-      print("🔥 FirebaseAuthException: ${e.message}");
+      log("🔥 FirebaseAuthException: ${e.message}");
       emit(state.copyWith(isLoading: false, errorMessage: e.message));
+    }
+  }
+
+  Future<void> changePassword(String newPassword) async {
+    emit(state.copyWith(isLoading: true, isSuccess: false, errorMessage: null));
+
+    try {
+      await _userAuthRepository.updatePassword(newPassword);
+
+      emit(state.copyWith(isLoading: false, isSuccess: true, isNewUser: false));
+    } catch (e) {
+      log("Error: $e");
+      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 

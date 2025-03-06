@@ -18,7 +18,7 @@ import 'package:pbnhs/features/list_reports/presentation/list_reports_screen.dar
     as _i5;
 import 'package:pbnhs/features/list_type/presentation/list_type_screen.dart'
     as _i6;
-import 'package:pbnhs/features/onboarding%20presentations/change_password/presentation/change_password_screen.dart'
+import 'package:pbnhs/features/onboarding%20presentations/login/change_password/presentation/change_password_screen.dart'
     as _i3;
 import 'package:pbnhs/features/onboarding%20presentations/forgot_password/presentation/forgot_password_screen.dart'
     as _i4;

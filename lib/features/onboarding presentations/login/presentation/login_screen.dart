@@ -20,6 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  bool _isPasswordVisible = false;
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         return Padding(
                           padding: const EdgeInsets.all(25),
                           child: Form(
-                            key: _formKey, // Form key added
+                            key: _formKey,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
@@ -98,22 +99,43 @@ class _LoginScreenState extends State<LoginScreen> {
                                 const SizedBox(height: 20),
                                 TextFormField(
                                   controller: _passwordController,
-                                  obscureText: true,
-                                  decoration: const InputDecoration(
+                                  obscureText: !_isPasswordVisible,
+                                  decoration: InputDecoration(
                                     labelText: 'Password',
                                     border: OutlineInputBorder(),
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        _isPasswordVisible
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                      ),
+                                      onPressed: () {
+                                        setState(() {
+                                          _isPasswordVisible = !_isPasswordVisible;
+                                        });
+                                      },
+                                    ),
                                   ),
                                   validator: (value) =>
-                                      Validators.validateField(
-                                          value, 'Password'),
+                                      Validators.validateField(value, 'Password'),
                                 ),
                                 const SizedBox(height: 10),
+                                if (state.errorMessage != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(bottom: 10),
+                                    child: Text(
+                                      state.errorMessage!,
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontSize: 14,
+                                      ),
+                                    ),
+                                  ),
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: GestureDetector(
                                     onTap: () {
-                                      context.router
-                                          .push(ForgotPasswordRoute());
+                                      context.router.replace(ForgotPasswordRoute());
                                     },
                                     child: Text(
                                       'Forgot Password?',
@@ -131,14 +153,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   onTap: state.isLoading
                                       ? null
                                       : () {
-                                          if (_formKey.currentState!
-                                              .validate()) {
-                                            context
-                                                .read<UserAuthCubit>()
-                                                .signIn(
+                                          if (_formKey.currentState!.validate()) {
+                                            context.read<UserAuthCubit>().signIn(
                                                   _emailController.text.trim(),
-                                                  _passwordController.text
-                                                      .trim(),
+                                                  _passwordController.text.trim(),
                                                 );
                                           }
                                         },
