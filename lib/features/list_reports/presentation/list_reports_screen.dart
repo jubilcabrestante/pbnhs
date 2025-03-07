@@ -7,6 +7,7 @@ import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
 import 'package:pbnhs/features/list_reports/presentation/list_reports_dialog.dart';
 import 'package:pbnhs/features/list_reports/presentation/list_reports_edit_dialog.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 @RoutePage()
 class ListReportsScreen extends StatefulWidget {
@@ -102,7 +103,7 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold))),
                               DataColumn(
-                                  label: Text('File',
+                                  label: Text('Download',
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold))),
                               DataColumn(
@@ -115,7 +116,28 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                 DataCell(Text(report.title)),
                                 DataCell(Text(formatDate(report.dateUploaded))),
                                 DataCell(Text(report.createdBy)),
-                                DataCell(Text(report.link)),
+                                DataCell(
+                                  IconButton(
+                                    icon: const Icon(Icons.download),
+                                    onPressed: () async {
+                                      if (report.link.isNotEmpty) {
+                                        final uri = Uri.parse(report.link);
+                                        if (await canLaunchUrl(uri)) {
+                                          await launchUrl(uri);
+                                        } else {
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(
+                                              const SnackBar(
+                                                  content: Text(
+                                                      'Could not download file')),
+                                            );
+                                          }
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ),
                                 DataCell(
                                   Row(
                                     children: [

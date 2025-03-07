@@ -22,7 +22,7 @@ class ListReportsRepository {
 
     await _firestore.collection('reports').add({
       ...report.toJson(),
-      'userId': user.uid, // ✅ Ensure userId is stored in Firestore
+      'adminId': user.uid, // ✅ Ensure userId is stored in Firestore
     });
   }
 
@@ -32,7 +32,7 @@ class ListReportsRepository {
 
     await _firestore.collection('reports').doc(report.id).update({
       ...report.toJson(),
-      'userId': user.uid, // Ensures userId remains consistent
+      'adminId': user.uid, // Ensures userId remains consistent
     });
   }
 

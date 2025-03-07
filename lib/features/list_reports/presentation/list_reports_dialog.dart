@@ -5,7 +5,7 @@ import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
 import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
-import 'dart:io';
+import 'dart:typed_data';
 
 class ListReportsDialog extends StatefulWidget {
   final String selectedType;
@@ -24,24 +24,46 @@ class ListReportsDialog extends StatefulWidget {
 class _ListReportsDialogState extends State<ListReportsDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _title = TextEditingController();
-  File? _selectedFile;
+  Uint8List? _selectedFileData;
   String? _selectedFileName;
+  String? _fileError; // To track file validation errors
 
   Future<void> _pickFile() async {
     final result = await context.read<ListReportsCubit>().selectFile();
     if (result != null) {
       setState(() {
-        _selectedFile = result;
-        _selectedFileName = result.path.split('/').last;
+        _selectedFileData = result['data'] as Uint8List?;
+        _selectedFileName = result['name'] as String?;
+        _fileError = null; // Clear error when a file is selected
       });
     }
   }
 
   void _removeFile() {
     setState(() {
-      _selectedFile = null;
+      _selectedFileData = null;
       _selectedFileName = null;
+      _fileError = 'Please select a file'; // Show error if file is removed
     });
+  }
+
+  void _validateAndSubmit() {
+    final isValidForm = _formKey.currentState!.validate();
+    final hasFile = _selectedFileData != null && _selectedFileName != null;
+
+    setState(() {
+      _fileError = hasFile ? null : 'Please select a file'; // Set error if no file is selected
+    });
+
+    if (isValidForm && hasFile) {
+      context.read<ListReportsCubit>().addReport(
+            title: _title.text,
+            type: widget.selectedType,
+            createdBy: widget.user,
+            fileData: _selectedFileData,
+            fileName: _selectedFileName,
+          );
+    }
   }
 
   @override
@@ -62,8 +84,10 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                   children: [
                     const Text(
                       'Submit Report',
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     IconButton(
                       icon: const Icon(Icons.close),
@@ -75,8 +99,7 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                 CustomTextfield(
                   controller: _title,
                   label: 'Title',
-                  validator: (value) =>
-                      Validators.validateField(value, 'Title'),
+                  validator: (value) => Validators.validateField(value, 'Title'),
                 ),
                 const SizedBox(height: 10),
                 if (_selectedFileName != null)
@@ -87,7 +110,9 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                         child: Text(
                           'Selected File: $_selectedFileName',
                           style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.w500),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -98,9 +123,25 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                     ],
                   ),
                 const SizedBox(height: 10),
-                CustomButton(
-                  text: 'Select File',
-                  onTap: _pickFile,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    CustomButton(
+                      text: 'Select File',
+                      onTap: _pickFile,
+                    ),
+                    if (_fileError != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0, left: 8.0),
+                        child: Text(
+                          _fileError!,
+                          style: TextStyle(
+                            color: Colors.red[700],
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 20),
                 BlocConsumer<ListReportsCubit, ListReportsState>(
@@ -118,16 +159,8 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                         ? const CircularProgressIndicator()
                         : CustomButton(
                             text: 'Submit Report',
-                            onTap: () async {
-                              if (_formKey.currentState!.validate()) {
-                                context.read<ListReportsCubit>().addReport(
-                                      title: _title.text,
-                                      type: widget.selectedType,
-                                      createdBy: widget.user,
-                                      file: _selectedFile, // Nullable file
-                                    );
-                              }
-                            });
+                            onTap: _validateAndSubmit,
+                          );
                   },
                 ),
               ],

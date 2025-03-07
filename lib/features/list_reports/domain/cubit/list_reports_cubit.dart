@@ -1,5 +1,6 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/repository/user_repository.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
@@ -46,31 +47,53 @@ class ListReportsCubit extends Cubit<ListReportsState> {
         UserModel userModel =
             await _userAuthRepository.getUserDetails(user.uid);
         log('Username: ${userModel.name}');
-        return userModel; // Return the fetched user
-      } else {
-        log('No user logged in');
-        return null;
+        return userModel;
       }
     } catch (e) {
       log('Error fetching user details: $e');
-      return null;
-    }
-  }
-
-  Future<File?> selectFile() async {
-    FilePickerResult? result = await FilePicker.platform.pickFiles();
-    if (result != null && result.files.single.path != null) {
-      return File(result.files.single.path!);
     }
     return null;
   }
 
-  Future<String?> uploadFile(File file) async {
-    String fileName = file.path.split('/').last;
-    String filePath = 'reports/$fileName';
+  Future<Map<String, dynamic>?> selectFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['pdf', 'doc', 'docx', 'jpg', 'png'],
+      withData: true,
+    );
 
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.first;
+      Uint8List? fileBytes;
+      String fileName = file.name;
+
+      if (kIsWeb) {
+        fileBytes = file.bytes;
+      } else {
+        if (file.path != null) {
+          fileBytes = await File(file.path!).readAsBytes();
+        }
+      }
+
+      if (fileBytes != null) {
+        return {
+          'data': fileBytes,
+          'name': fileName,
+        };
+      }
+    }
+    log('No file selected or invalid file');
+    return null;
+  }
+
+  Future<String?> uploadFile(Uint8List fileData, String fileName) async {
+    String filePath = 'reports/$fileName';
     try {
-      UploadTask uploadTask = _firebaseStorage.ref(filePath).putFile(file);
+      UploadTask uploadTask = _firebaseStorage.ref(filePath).putData(
+            fileData,
+            SettableMetadata(contentType: _getMimeType(fileName)),
+          );
+
       TaskSnapshot snapshot = await uploadTask;
       String downloadUrl = await snapshot.ref.getDownloadURL();
       log('File uploaded successfully: $downloadUrl');
@@ -86,68 +109,25 @@ class ListReportsCubit extends Cubit<ListReportsState> {
     required String title,
     required String type,
     required String createdBy,
-    File? file,
+    Uint8List? fileData,
+    String? fileName,
   }) async {
     emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
-
     try {
       String? fileUrl;
-      if (file != null) {
-        fileUrl = await uploadFile(file);
+      if (fileData != null && fileName != null) {
+        fileUrl = await uploadFile(fileData, fileName);
       }
-
       final report = ListReportsModel(
-        id: '', // ✅ Generate ID inside Cubit
+        id: '',
         title: title,
         type: type,
         dateUploaded: DateTime.now(),
         createdBy: createdBy,
         link: fileUrl ?? '',
       );
-
       await _listReportsRepository.addReport(report);
       final updatedReports = await _listReportsRepository.getReport(type);
-
-      emit(state.copyWith(
-        isLoading: false,
-        isSuccess: true,
-        reports: updatedReports,
-      ));
-    } catch (e) {
-      emit(state.copyWith(
-        isLoading: false,
-        isSuccess: false,
-        errorMessage: e.toString(),
-      ));
-    }
-  }
-
-  Future<void> updateReport({
-    required String reportId,
-    required String title,
-    required String type,
-    File? file,
-  }) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
-
-    try {
-      String? fileUrl;
-      if (file != null) {
-        fileUrl = await uploadFile(file);
-      }
-
-      final updatedReport = ListReportsModel(
-        id: reportId,
-        title: title,
-        type: type,
-        dateUploaded: DateTime.now(),
-        createdBy: '', // Keep previous createdBy
-        link: fileUrl ?? '',
-      );
-
-      await _listReportsRepository.updateReport(updatedReport);
-      final updatedReports = await _listReportsRepository.getReport(type);
-
       emit(state.copyWith(
         isLoading: false,
         isSuccess: true,
@@ -165,20 +145,90 @@ class ListReportsCubit extends Cubit<ListReportsState> {
   Future<void> deleteReport(String reportId, String selectedType) async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));
-
       await _listReportsRepository.deleteReport(reportId);
       log('Report deleted successfully');
-
       final updatedReports =
           await _listReportsRepository.getReport(selectedType);
+      emit(state.copyWith(
+        isLoading: false,
+        isSuccess: true,
+        reports: updatedReports,
+      ));
+    } catch (e) {
+      log('Error deleting report: $e');
+      emit(state.copyWith(
+        isLoading: false,
+        isSuccess: false,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
+
+  String _getMimeType(String fileName) {
+    final extension = fileName.split('.').last.toLowerCase();
+    switch (extension) {
+      case 'pdf':
+        return 'application/pdf';
+      case 'doc':
+      case 'docx':
+        return 'application/msword';
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      default:
+        return 'application/octet-stream';
+    }
+  }
+
+  Future<void> updateReport({
+    required String reportId,
+    required String title,
+    required String type,
+    Uint8List? fileData,
+    String? fileName,
+  }) async {
+    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
+
+    try {
+      String? fileUrl;
+      if (fileData != null && fileName != null) {
+        fileUrl = await uploadFile(fileData, fileName);
+      }
+
+      // Fetch existing report details to retain the createdBy field
+      final existingReports = await _listReportsRepository.getReport(type);
+      final existingReport = existingReports.firstWhere(
+        (report) => report.id == reportId,
+        orElse: () => ListReportsModel(
+          id: reportId,
+          title: title,
+          type: type,
+          dateUploaded: DateTime.now(),
+          createdBy: '', // Fallback (should not be used if report exists)
+          link: '',
+        ),
+      );
+
+      final updatedReport = ListReportsModel(
+        id: reportId,
+        title: title,
+        type: type,
+        dateUploaded: DateTime.now(),
+        createdBy: existingReport.createdBy, // Preserve the original creator
+        link: fileUrl ?? existingReport.link, // Retain old file if no new file
+      );
+
+      await _listReportsRepository.updateReport(updatedReport);
+      final updatedReports = await _listReportsRepository.getReport(type);
 
       emit(state.copyWith(
         isLoading: false,
         isSuccess: true,
-        reports: updatedReports, // ✅ Ensure updated reports are emitted
+        reports: updatedReports,
       ));
     } catch (e) {
-      log('Error deleting report: $e');
       emit(state.copyWith(
         isLoading: false,
         isSuccess: false,

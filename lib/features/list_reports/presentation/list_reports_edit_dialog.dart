@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
@@ -5,7 +7,6 @@ import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
 import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
-import 'dart:io';
 
 class EditReportDialog extends StatefulWidget {
   final String selectedType;
@@ -28,7 +29,7 @@ class EditReportDialog extends StatefulWidget {
 class _EditReportDialogState extends State<EditReportDialog> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _title = TextEditingController();
-  File? _selectedFile;
+  Uint8List? _selectedFileData;
   String? _selectedFileName;
 
   @override
@@ -42,15 +43,15 @@ class _EditReportDialogState extends State<EditReportDialog> {
     final result = await context.read<ListReportsCubit>().selectFile();
     if (result != null) {
       setState(() {
-        _selectedFile = result;
-        _selectedFileName = result.path.split('/').last;
+        _selectedFileData = result['data'] as Uint8List?;
+        _selectedFileName = result['name'] as String?;
       });
     }
   }
 
   void _removeFile() {
     setState(() {
-      _selectedFile = null;
+      _selectedFileData = null;
       _selectedFileName = null;
     });
   }
@@ -135,7 +136,10 @@ class _EditReportDialogState extends State<EditReportDialog> {
                                       reportId: widget.reportId,
                                       title: _title.text,
                                       type: widget.selectedType,
-                                      file: _selectedFile, // Nullable file
+                                      fileData:
+                                          _selectedFileData, // Now Uint8List
+                                      fileName:
+                                          _selectedFileName, // Required for upload
                                     );
                               }
                             },
