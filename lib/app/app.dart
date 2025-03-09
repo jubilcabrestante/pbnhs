@@ -9,8 +9,8 @@ import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart
 import 'package:pbnhs/features/list_reports/repository/list_report_repo.dart';
 import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_cubit.dart';
 import 'package:pbnhs/features/list_type/repository/type_repo.dart';
-import 'package:pbnhs/features/onboarding%20presentations/forgot_password/domain/cubit/forgot_password_cubit.dart';
-import 'package:pbnhs/features/onboarding%20presentations/login/domain/cubit/user_auth_cubit.dart';
+import 'package:pbnhs/features/forgot_password/domain/cubit/forgot_password_cubit.dart';
+import 'package:pbnhs/features/login/domain/cubit/user_auth_cubit.dart';
 
 class MyApp extends StatelessWidget {
   MyApp({super.key});
@@ -26,11 +26,15 @@ class MyApp extends StatelessWidget {
         BlocProvider(
             create: (context) => AccountCubit(UserAccountRepository())),
         BlocProvider(
+          create: (context) {
+            final userAuthCubit = UserAuthCubit(UserAuthRepository());
+            userAuthCubit.initializeUser(); // ✅ Ensure user details are fetched
+            return userAuthCubit;
+          },
+        ),
+        BlocProvider(
             create: (context) => ListReportsCubit(
                 ListReportsRepository(), UserAuthRepository())),
-        BlocProvider(
-          create: (context) => UserAuthCubit(UserAuthRepository()),
-        ),
         BlocProvider(
           create: (context) => ForgotPasswordCubit(UserAuthRepository()),
         ),

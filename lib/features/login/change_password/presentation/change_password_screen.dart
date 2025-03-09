@@ -5,9 +5,8 @@ import 'package:pbnhs/app/routes/app_router.gr.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
 import 'package:pbnhs/core/constants/colors.dart';
 import 'package:pbnhs/core/utils/validators.dart';
-import 'package:pbnhs/features/onboarding%20presentations/login/domain/cubit/user_auth_cubit.dart';
-import 'package:pbnhs/features/onboarding%20presentations/login/domain/cubit/user_auth_state.dart';
-
+import 'package:pbnhs/features/login/domain/cubit/user_auth_cubit.dart';
+import 'package:pbnhs/features/login/domain/cubit/user_auth_state.dart';
 
 @RoutePage()
 class ChangePasswordScreen extends StatefulWidget {

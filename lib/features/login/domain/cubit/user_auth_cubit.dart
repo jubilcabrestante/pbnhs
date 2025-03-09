@@ -3,14 +3,17 @@ import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/repository/user_repository.dart';
-import '../../../../../core/models/user_auth/user_auth_model.dart';
-import '../../../../accounts/repository/user_model/user_model.dart';
+import '../../../../core/models/user_auth/user_auth_model.dart';
+import '../../../accounts/repository/user_model/user_model.dart';
 import 'user_auth_state.dart';
 
 class UserAuthCubit extends Cubit<UserAuthState> {
   final UserAuthRepository _userAuthRepository;
 
   UserAuthCubit(this._userAuthRepository) : super(const UserAuthState());
+  Future<void> initializeUser() async {
+    await getUserAuthDetails();
+  }
 
   Future<void> signIn(String email, String password) async {
     // Reset state before attempting sign-in
@@ -58,6 +61,32 @@ class UserAuthCubit extends Cubit<UserAuthState> {
       log("❌ Error: $e");
       emit(const UserAuthState().copyWith(
           isLoading: false, errorMessage: "An unexpected error occurred"));
+    }
+  }
+
+  Future<void> getUserAuthDetails() async {
+    emit(state.copyWith(isLoading: true));
+
+    try {
+      final firebaseUser = FirebaseAuth.instance.currentUser;
+      if (firebaseUser != null) {
+        UserModel userModel =
+            await _userAuthRepository.getUserDetails(firebaseUser.uid);
+        UserAuthModel userAuth = UserAuthModel(
+          user: userModel,
+          isAuthenticated: true,
+        );
+
+        emit(state.copyWith(
+          isLoading: false,
+          userAuthModel: userAuth,
+        ));
+      } else {
+        emit(state.copyWith(isLoading: false, userAuthModel: null));
+      }
+    } catch (e) {
+      emit(state.copyWith(
+          isLoading: false, errorMessage: "Failed to fetch user details"));
     }
   }
 

@@ -14,16 +14,15 @@ import 'package:flutter/material.dart' as _i9;
 import 'package:pbnhs/app/app_screen.dart' as _i2;
 import 'package:pbnhs/features/accounts/presentation/accounts_screen.dart'
     as _i1;
+import 'package:pbnhs/features/forgot_password/presentation/forgot_password_screen.dart'
+    as _i4;
 import 'package:pbnhs/features/list_reports/presentation/list_reports_screen.dart'
     as _i5;
 import 'package:pbnhs/features/list_type/presentation/list_type_screen.dart'
     as _i6;
-import 'package:pbnhs/features/onboarding%20presentations/login/change_password/presentation/change_password_screen.dart'
+import 'package:pbnhs/features/login/change_password/presentation/change_password_screen.dart'
     as _i3;
-import 'package:pbnhs/features/onboarding%20presentations/forgot_password/presentation/forgot_password_screen.dart'
-    as _i4;
-import 'package:pbnhs/features/onboarding%20presentations/login/presentation/login_screen.dart'
-    as _i7;
+import 'package:pbnhs/features/login/presentation/login_screen.dart' as _i7;
 
 /// generated route for
 /// [_i1.AccountsScreen]

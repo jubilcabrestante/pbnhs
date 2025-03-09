@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
-import 'package:pbnhs/features/onboarding%20presentations/login/domain/i_user_auth_repo.dart';
+import 'package:pbnhs/features/login/domain/i_user_auth_repo.dart';
 
 class UserAuthRepository implements IUserAuthRepository {
   final FirebaseAuth _firebaseAuth;

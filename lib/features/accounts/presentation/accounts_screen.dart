@@ -54,7 +54,6 @@ class _AccountsScreenState extends State<AccountsScreen> {
                       text: 'Add Account',
                       onTap: () {
                         showDialog(
-                          barrierDismissible: false,
                           context: context,
                           builder: (context) => const AccountDialog(),
                         );
@@ -89,7 +88,8 @@ class _AccountsScreenState extends State<AccountsScreen> {
                                     style: TextStyle(
                                         fontWeight: FontWeight.bold))),
                           ],
-                          rows: state.users!.map((user) {
+                          rows: state.users!.map((users) {
+                            final user = users;
                             return DataRow(cells: [
                               DataCell(Text(user.name)),
                               DataCell(Text(user.email)),

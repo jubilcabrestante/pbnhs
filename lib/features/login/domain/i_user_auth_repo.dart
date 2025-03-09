@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
-import '../../../accounts/repository/user_model/user_model.dart'; // ✅ Import FirebaseAuth
+import '../../accounts/repository/user_model/user_model.dart'; // ✅ Import FirebaseAuth
 
 abstract class IUserAuthRepository {
   Stream<User?> get user;

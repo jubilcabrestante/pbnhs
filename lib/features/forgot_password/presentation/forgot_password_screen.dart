@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
 import 'package:pbnhs/core/constants/colors.dart';
-import 'package:pbnhs/features/onboarding%20presentations/forgot_password/domain/cubit/forgot_password_cubit.dart';
+import 'package:pbnhs/features/forgot_password/domain/cubit/forgot_password_cubit.dart';
 
 @RoutePage()
 class ForgotPasswordScreen extends StatefulWidget {

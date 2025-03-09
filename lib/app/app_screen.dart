@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/app/routes/app_router.gr.dart';
-import 'package:pbnhs/features/onboarding%20presentations/login/domain/cubit/user_auth_cubit.dart';
-import 'package:pbnhs/features/onboarding%20presentations/login/domain/cubit/user_auth_state.dart';
+import 'package:pbnhs/features/login/domain/cubit/user_auth_cubit.dart';
+import 'package:pbnhs/features/login/domain/cubit/user_auth_state.dart';
 import 'package:pbnhs/gen/assets.gen.dart';
 
 @RoutePage()
@@ -17,8 +19,9 @@ class AppScreen extends StatelessWidget {
         child: BlocBuilder<UserAuthCubit, UserAuthState>(
           builder: (context, state) {
             final userAuth = state.userAuthModel;
-            bool isSuperAdmin = userAuth?.userRole == 'super-admin';
-
+            bool isSuperAdmin = userAuth?.user.role == 'super-admin';
+            log('User name: ${userAuth?.user.name}');
+            log('User Role: ${userAuth?.user.role}');
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -113,7 +116,9 @@ class AppScreen extends StatelessWidget {
             ),
             TextButton(
               onPressed: () {
-                context.read<UserAuthCubit>().logOut(); // Call logOut function
+                Navigator.of(dialogContext)
+                    .pop(); // ✅ Close dialog before logout
+                context.read<UserAuthCubit>().logOut();
                 context.router.replace(const LoginRoute()); // Navigate to login
               },
               child: const Text(

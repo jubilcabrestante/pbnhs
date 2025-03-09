@@ -174,7 +174,7 @@ class _$UserAuthStateImpl implements _UserAuthState {
   const _$UserAuthStateImpl(
       {this.isLoading = false,
       this.isSuccess = false,
-      this.isNewUser = false,
+      this.isNewUser = true,
       this.errorMessage,
       this.userAuthModel});
 

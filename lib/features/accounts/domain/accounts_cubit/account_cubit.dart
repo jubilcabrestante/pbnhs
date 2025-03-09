@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
 import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
@@ -8,18 +10,34 @@ class AccountCubit extends Cubit<AccountState> {
 
   AccountCubit(this._userAccountRepository) : super(const AccountState());
 
-  Future<void> createAccount(UserModel user, String password) async {
+  Future<void> createAccount(
+      UserModel user, String password, String adminPassword) async {
     emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
 
     try {
       await _userAccountRepository.createUserWithEmailAndPassword(
-          user, password);
-      final updatedUsers = await _userAccountRepository.getUsers();
+        user,
+        password,
+        adminPassword,
+      );
+
+      // ✅ Convert FirebaseAuth User to UserModel
+      final firebaseUser = await _userAccountRepository.currentUserStream.first;
+      final currentUser = firebaseUser != null
+          ? UserModel(
+              uid: firebaseUser.uid,
+              email: firebaseUser.email ?? '',
+              role: '', name: '', // Assign the role if needed
+            )
+          : null;
 
       emit(state.copyWith(
-          isLoading: false, isSuccess: true, users: updatedUsers));
+        isLoading: false,
+        isSuccess: true,
+        currentUser: currentUser,
+      ));
 
-      emit(state.copyWith(isSuccess: false));
+      log("Logged in user: ${currentUser?.email}");
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
@@ -46,8 +64,7 @@ class AccountCubit extends Cubit<AccountState> {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     try {
       List<UserModel> users = await _userAccountRepository.getUsers();
-
-      emit(state.copyWith(isLoading: false, users: users));
+      emit(state.copyWith(isLoading: false, users: users)); // Fix this line
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }

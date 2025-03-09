@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
@@ -8,6 +9,8 @@ import 'package:pbnhs/core/models/user_roles/user_roles_model.dart';
 import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
+
+import 'app_dialog.dart'; // Import AppDialog
 
 class AccountDialog extends StatefulWidget {
   final UserModel? user;
@@ -22,6 +25,8 @@ class _AccountDialogState extends State<AccountDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _adminPasswordController =
+      TextEditingController();
   UserRole? _selectedRole;
 
   @override
@@ -34,6 +39,65 @@ class _AccountDialogState extends State<AccountDialog> {
         (role) => role.toString().split('.').last == widget.user!.role,
         orElse: () => UserRole.admin,
       );
+    }
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      final accountCubit = context.read<AccountCubit>();
+      final bool isEditing = widget.user != null;
+
+      if (isEditing) {
+        final updatedUser = widget.user!.copyWith(
+          name: _nameController.text,
+          email: _emailController.text,
+          role: _selectedRole?.toString().split('.').last ?? '',
+        );
+        accountCubit.updateUser(updatedUser);
+      } else {
+        // ✅ Ask admin for their password before creating an account
+        AppDialog.showModal(
+          context: context,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                "Re-enter Admin Password",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 10),
+              CustomTextfield(
+                controller: _adminPasswordController,
+                label: "Admin Password",
+                obscure: true,
+                validator: (value) =>
+                    Validators.validateField(value, "Admin Password"),
+              ),
+              const SizedBox(height: 15),
+              CustomButton(
+                text: "Confirm",
+                onTap: () {
+                  if (_adminPasswordController.text.isNotEmpty) {
+                    context.maybePop();
+                    final newUser = UserModel(
+                      uid: '',
+                      name: _nameController.text,
+                      email: _emailController.text,
+                      role: _selectedRole?.toString().split('.').last ?? '',
+                    );
+                    accountCubit.createAccount(
+                      newUser,
+                      _passwordController.text,
+                      _adminPasswordController.text, // ✅ Pass admin password
+                    );
+                    context.maybePop();
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      }
     }
   }
 
@@ -52,7 +116,6 @@ class _AccountDialogState extends State<AccountDialog> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Header
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -67,14 +130,12 @@ class _AccountDialogState extends State<AccountDialog> {
                   ],
                 ),
                 const SizedBox(height: 15),
-
                 CustomTextfield(
                   controller: _nameController,
                   label: 'Name',
                   validator: (value) => Validators.validateField(value, 'Name'),
                 ),
                 const SizedBox(height: 15),
-
                 CustomTextfield(
                   controller: _emailController,
                   label: 'Email',
@@ -82,7 +143,6 @@ class _AccountDialogState extends State<AccountDialog> {
                       Validators.validateField(value, 'Email'),
                 ),
                 const SizedBox(height: 15),
-
                 if (!isEditing) ...[
                   CustomTextfield(
                     controller: _passwordController,
@@ -93,7 +153,6 @@ class _AccountDialogState extends State<AccountDialog> {
                   ),
                   const SizedBox(height: 15),
                 ],
-
                 DropdownButtonFormField<UserRole>(
                   value: _selectedRole,
                   decoration: InputDecoration(
@@ -118,11 +177,10 @@ class _AccountDialogState extends State<AccountDialog> {
                   }).toList(),
                 ),
                 const SizedBox(height: 20),
-
                 BlocConsumer<AccountCubit, AccountState>(
                   listener: (context, state) {
                     if (state.isSuccess) {
-                      Navigator.pop(context);
+                      context.maybePop();
                       context.read<AccountCubit>().getUsers();
                     } else if (state.errorMessage != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -135,38 +193,7 @@ class _AccountDialogState extends State<AccountDialog> {
                         ? const CircularProgressIndicator()
                         : CustomButton(
                             text: isEditing ? 'Save Changes' : 'Create Account',
-                            onTap: () {
-                              if (_formKey.currentState!.validate()) {
-                                final accountCubit =
-                                    context.read<AccountCubit>();
-                                if (isEditing) {
-                                  final updatedUser = widget.user!.copyWith(
-                                    name: _nameController.text,
-                                    email: _emailController.text,
-                                    role: _selectedRole
-                                            ?.toString()
-                                            .split('.')
-                                            .last ??
-                                        '',
-                                  );
-                                  accountCubit.updateUser(updatedUser);
-                                } else {
-                                  final newUser = UserModel(
-                                    uid: '',
-                                    name: _nameController.text,
-                                    email: _emailController.text,
-                                    role: _selectedRole
-                                            ?.toString()
-                                            .split('.')
-                                            .last ??
-                                        '',
-                                  );
-
-                                  accountCubit.createAccount(
-                                      newUser, _passwordController.text);
-                                }
-                              }
-                            },
+                            onTap: _submit, // Use _submit function
                           );
                   },
                 ),
