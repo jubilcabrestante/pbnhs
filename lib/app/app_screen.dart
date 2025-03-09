@@ -110,8 +110,11 @@ class AppScreen extends StatelessWidget {
           content: const Text('Are you sure you want to log out?'),
           actions: [
             TextButton(
-              onPressed: () =>
-                  Navigator.of(dialogContext).pop(), // Close dialog
+              onPressed: () {
+                UserAuthCubit userAuthCubit = context.read<UserAuthCubit>();
+                userAuthCubit.logOut();
+                Navigator.of(dialogContext).pop();
+              },
               child: const Text('Cancel'),
             ),
             TextButton(

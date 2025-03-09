@@ -22,8 +22,27 @@ class ListReportsCubit extends Cubit<ListReportsState> {
   Future<void> getReports(String selectedType) async {
     log('Fetching reports for type: $selectedType');
     emit(state.copyWith(isLoading: true, errorMessage: null));
+
     try {
-      final reports = await _listReportsRepository.getReport(selectedType);
+      // Fetch user details to determine their role
+      final user = await fetchUserDetails();
+      if (user == null) {
+        throw Exception('Failed to fetch user details');
+      }
+
+      // Determine query based on user role
+      List<ListReportsModel> reports;
+      if (user.role == 'admin') {
+        reports = await _listReportsRepository.getReportsByCreator(
+          type: selectedType,
+          createdBy: user.uid,
+        );
+      } else if (user.role == 'super-admin') {
+        reports = await _listReportsRepository.getReport(selectedType);
+      } else {
+        throw Exception('Unauthorized role: ${user.role}');
+      }
+
       log('Reports fetched successfully: ${reports.length}');
       emit(state.copyWith(
         isLoading: false,

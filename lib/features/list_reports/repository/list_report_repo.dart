@@ -16,6 +16,21 @@ class ListReportsRepository {
         .toList();
   }
 
+  Future<List<ListReportsModel>> getReportsByCreator({
+    required String type,
+    required String createdBy,
+  }) async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('reports')
+        .where('type', isEqualTo: type)
+        .where('createdBy', isEqualTo: createdBy)
+        .get();
+
+    return querySnapshot.docs.map((doc) {
+      return ListReportsModel.fromFirestore(doc);
+    }).toList();
+  }
+
   Future<void> addReport(ListReportsModel report) async {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) throw Exception("User not authenticated");

@@ -30,14 +30,7 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<ListReportsCubit, ListReportsState>(
-      listener: (context, state) {
-        if (state.errorMessage != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(state.errorMessage!)),
-          );
-        }
-      },
+    return BlocBuilder<ListReportsCubit, ListReportsState>(
       builder: (context, state) {
         return Scaffold(
           body: Padding(
