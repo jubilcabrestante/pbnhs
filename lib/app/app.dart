@@ -29,35 +29,41 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => ListTypeCubit(type)),
-        BlocProvider(create: (context) => AccountCubit(userAccountRepository)),
-        BlocProvider(create: (context) => UserAuthCubit(userauth)),
-        BlocProvider(create: (context) => ListReportsCubit(list)),
-        BlocProvider(
-          create: (context) => ForgotPasswordCubit(userauth),
-        ),
+        RepositoryProvider(create: (_) => userAccountRepository),
       ],
-      child: MaterialApp.router(
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData(
-          scaffoldBackgroundColor: Colors.white,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider(create: (context) => ListTypeCubit(type)),
+          BlocProvider(
+              create: (context) => AccountCubit(userAccountRepository)),
+          BlocProvider(create: (context) => UserAuthCubit(userauth)),
+          BlocProvider(create: (context) => ListReportsCubit(list)),
+          BlocProvider(
+            create: (context) => ForgotPasswordCubit(userauth),
+          ),
+        ],
+        child: MaterialApp.router(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.white,
+            colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+            useMaterial3: true,
+          ),
+          routerConfig: _appRouter.config(),
+          builder: (context, child) {
+            return BlocListener<AccountCubit, AccountState>(
+              listener: (context, state) {
+                if (state.errorMessage != null &&
+                    state.errorMessage!.isNotEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(state.errorMessage!)),
+                  );
+                }
+              },
+              child: child,
+            );
+          },
         ),
-        routerConfig: _appRouter.config(),
-        builder: (context, child) {
-          return BlocListener<AccountCubit, AccountState>(
-            listener: (context, state) {
-              if (state.errorMessage != null &&
-                  state.errorMessage!.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(state.errorMessage!)),
-                );
-              }
-            },
-            child: child,
-          );
-        },
       ),
     );
   }

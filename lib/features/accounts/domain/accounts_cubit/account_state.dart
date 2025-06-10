@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
 part 'account_state.freezed.dart';
@@ -10,5 +11,6 @@ class AccountState with _$AccountState {
     @Default(false) bool isSuccess,
     @Default(false) bool isRole,
     List<AccountVm>? users,
+    User? currentUser,
   }) = _AccountState;
 }

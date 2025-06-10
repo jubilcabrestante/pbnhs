@@ -19,6 +19,12 @@ class AccountsScreen extends StatefulWidget {
 
 class _AccountsScreenState extends State<AccountsScreen> {
   @override
+  void initState() {
+    super.initState();
+    context.read<AccountCubit>().getUsers();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return BlocConsumer<AccountCubit, AccountState>(
       listener: (context, state) {
@@ -62,7 +68,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                       ? DataTable(
                           columnSpacing: 20.0,
                           headingRowColor: WidgetStateColor.resolveWith(
-                              (states) => Colors.grey[300]!),
+                              (states) => Color(0xfffffb02)),
                           border:
                               TableBorder.all(color: Colors.grey), // Add border
                           columns: const [
