@@ -121,17 +121,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                           value, 'Password'),
                                 ),
                                 const SizedBox(height: 10),
-                                if (state.errorMessage != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 10),
-                                    child: Text(
-                                      state.errorMessage!,
-                                      style: TextStyle(
-                                        color: Colors.red,
-                                        fontSize: 14,
-                                      ),
-                                    ),
-                                  ),
                                 Align(
                                   alignment: Alignment.centerRight,
                                   child: GestureDetector(

@@ -67,9 +67,14 @@ class ListReportsCubit extends Cubit<ListReportsState> {
 
       if (kIsWeb) {
         fileBytes = file.bytes;
+        log('Picked file on web: $fileName, bytes length: ${fileBytes?.length}');
       } else {
+        log('Picked file on native: $fileName, path: ${file.path}');
         if (file.path != null) {
           fileBytes = await File(file.path!).readAsBytes();
+          log('Read bytes length: ${fileBytes.length}');
+        } else {
+          log('File path is null');
         }
       }
 
@@ -78,9 +83,12 @@ class ListReportsCubit extends Cubit<ListReportsState> {
           'data': fileBytes,
           'name': fileName,
         };
+      } else {
+        log('File bytes is null');
       }
+    } else {
+      log('No file selected or empty file list');
     }
-    log('No file selected or invalid file');
     return null;
   }
 

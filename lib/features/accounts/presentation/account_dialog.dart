@@ -24,6 +24,7 @@ class _AccountDialogState extends State<AccountDialog> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   UserRole? _selectedRole;
+  bool _isPasswordVisible = false;
 
   @override
   void initState() {
@@ -97,10 +98,25 @@ class _AccountDialogState extends State<AccountDialog> {
                 ),
                 const SizedBox(height: 15),
                 if (!isEditing) ...[
-                  CustomTextfield(
+                  TextFormField(
                     controller: _passwordController,
-                    label: 'Password',
-                    obscure: true,
+                    obscureText: !_isPasswordVisible,
+                    decoration: InputDecoration(
+                      labelText: 'Password',
+                      border: OutlineInputBorder(),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _isPasswordVisible
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            _isPasswordVisible = !_isPasswordVisible;
+                          });
+                        },
+                      ),
+                    ),
                     validator: (value) =>
                         Validators.validateField(value, 'Password'),
                   ),
