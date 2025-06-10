@@ -2,8 +2,8 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
-import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 import 'package:pbnhs/features/accounts/domain/i_user_account_repo.dart';
 
 class UserAccountRepository implements IUserAccountRepository {
@@ -24,7 +24,19 @@ class UserAccountRepository implements IUserAccountRepository {
   Future<void> createUserWithEmailAndPassword(
       AccountVm user, String password) async {
     try {
-      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      final currentUser = _firebaseAuth.currentUser;
+      log("Current user: ${currentUser?.uid}");
+      if (currentUser == null) {
+        throw Exception("No super-admin is currently signed in.");
+      }
+
+      final FirebaseApp tempApp = await Firebase.initializeApp(
+        name: 'SecondaryApp',
+        options: Firebase.app().options,
+      );
+
+      final tempAuth = FirebaseAuth.instanceFor(app: tempApp);
+      final userCredential = await tempAuth.createUserWithEmailAndPassword(
         email: user.email,
         password: password,
       );
@@ -33,16 +45,18 @@ class UserAccountRepository implements IUserAccountRepository {
       if (authUser == null) throw Exception("User creation failed.");
 
       final docRef = _firestore.collection(adminCollection).doc(authUser.uid);
+      await docRef.set({
+        'uid': authUser.uid,
+        'role': user.role,
+        'name': user.name,
+        'email': user.email,
+        'isNewUser': user.isNewUser,
+      });
 
-      final newUser = UserVm(
-        uid: user.uid,
-        role: user.role,
-        name: user.name,
-        email: user.email,
-        isNewUser: user.isNewUser,
-      );
+      // Clean up the temporary app to avoid memory leaks
+      await tempApp.delete();
 
-      await docRef.set(newUser.toJson());
+      log("User created successfully without switching accounts");
     } catch (e) {
       log("Failed to create user: ${e.toString()}");
       rethrow;
@@ -58,7 +72,6 @@ class UserAccountRepository implements IUserAccountRepository {
         return AccountVm.fromJson(doc.data() as Map<String, dynamic>);
       }).toList();
 
-      log('Fetched users: $users');
       return users;
     } catch (e) {
       log("Failed to fetch users: ${e.toString()}");
@@ -81,7 +94,6 @@ class UserAccountRepository implements IUserAccountRepository {
   @override
   Future<void> deleteUser(String uid) async {
     try {
-      // ✅ Delete user from Firestore
       await _firestore.collection('admin').doc(uid).delete();
       log("User deleted from Firestore: $uid");
     } catch (e) {

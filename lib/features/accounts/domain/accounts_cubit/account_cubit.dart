@@ -8,31 +8,29 @@ class AccountCubit extends Cubit<AccountState> {
   final UserAccountRepository _userAccountRepository;
 
   AccountCubit(this._userAccountRepository) : super(const AccountState());
-  
+
   Stream<User?> get userStream => _userAccountRepository.currentUserStream;
 
-  Future<void> createAccount(AccountVm user, String password) async {
-    emit(state.copyWith(
-      isLoading: true,
-    ));
+  createAccount(AccountVm user, String password) async {
+    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
 
     try {
       await _userAccountRepository.createUserWithEmailAndPassword(
         user,
         password,
       );
-
+      emit(state.copyWith(isLoading: false, isSuccess: true));
+      await Future.delayed(const Duration(milliseconds: 500));
+      await getUsers();
+    } catch (e) {
       emit(state.copyWith(
         isLoading: false,
-        isSuccess: true,
+        errorMessage: e.toString(),
       ));
-      getUsers();
-    } catch (e) {
-      emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 
-  Future<void> updateUser(AccountVm user) async {
+  updateUser(AccountVm user) async {
     emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
 
     try {
@@ -42,14 +40,14 @@ class AccountCubit extends Cubit<AccountState> {
       emit(state.copyWith(
           isLoading: false, isSuccess: true, users: updatedUsers));
 
-      // Reset isSuccess
+      getUsers();
       emit(state.copyWith(isSuccess: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 
-  Future<void> getUsers() async {
+  getUsers() async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     try {
       List<AccountVm> users = await _userAccountRepository.getUsers();
@@ -59,7 +57,7 @@ class AccountCubit extends Cubit<AccountState> {
     }
   }
 
-  Future<void> deleteUser(String uid) async {
+  deleteUser(String uid) async {
     emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
 
     try {
@@ -68,7 +66,7 @@ class AccountCubit extends Cubit<AccountState> {
 
       emit(state.copyWith(
           isLoading: false, isSuccess: true, users: updatedUsers));
-
+      getUsers();
       emit(state.copyWith(isSuccess: false));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));

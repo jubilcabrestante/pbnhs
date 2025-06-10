@@ -28,9 +28,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<AccountCubit, AccountState>(
       listener: (context, state) {
-        if (state.isSuccess) {
-          context.read<AccountCubit>().getUsers(); // Refresh users list
-        } else if (state.errorMessage != null) {
+        if (state.errorMessage != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(state.errorMessage!)),
           );

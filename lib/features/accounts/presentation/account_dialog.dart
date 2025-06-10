@@ -41,8 +41,8 @@ class _AccountDialogState extends State<AccountDialog> {
         name: _nameController.text.trim(),
         email: _emailController.text.trim(),
         role: UserRoles.getRoleName(_selectedRole!),
-        uid: widget.user!.uid,
-        isNewUser: widget.user!.isNewUser,
+        uid: widget.user?.uid ?? '',
+        isNewUser: widget.user?.isNewUser ?? true,
       );
 
       final cubit = context.read<AccountCubit>();
@@ -134,7 +134,6 @@ class _AccountDialogState extends State<AccountDialog> {
                   listener: (context, state) {
                     if (state.isSuccess) {
                       context.maybePop();
-                      context.read<AccountCubit>().getUsers();
                     } else if (state.errorMessage != null) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(state.errorMessage!)),
