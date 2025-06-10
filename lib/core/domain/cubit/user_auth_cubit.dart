@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -9,21 +12,30 @@ part 'user_auth_cubit.freezed.dart';
 
 class UserAuthCubit extends Cubit<UserAuthState> {
   final IUserAuthRepository _userAuthRepository;
-  UserAuthCubit(
-    this._userAuthRepository,
-  ) : super(UserAuthState()) {
-    getCurrentUserDetails();
+  StreamSubscription<User?>? _userSub;
+
+  UserAuthCubit(this._userAuthRepository) : super(UserAuthState()) {
+    _userSub = _userAuthRepository.userStream.listen((user) {
+      if (user == null) {
+        emit(state.copyWith(
+          user: null,
+          isAuthenticated: false,
+        ));
+      } else if (state.user == null) {
+        getUserDetails(user.uid);
+      }
+    });
   }
 
-  getCurrentUserDetails() async {
+  getUserDetails(String uid) async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));
-      final firebaseUser = FirebaseAuth.instance.currentUser;
-      final user = await _userAuthRepository.getUserDetails(firebaseUser!.uid);
+      final user = await _userAuthRepository.getUserDetails(uid);
+      log('User details fetched: ${user.uid}');
       emit(state.copyWith(
         isLoading: false,
-        isAuthenticated: true,
         user: user,
+        isAuthenticated: true,
         isNewUser: user.isNewUser,
       ));
     } catch (e) {
@@ -34,11 +46,13 @@ class UserAuthCubit extends Cubit<UserAuthState> {
     }
   }
 
-  signIn(String email, String password) async {
+  Future<void> signIn(String email, String password) async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));
       final user =
           await _userAuthRepository.signInWithEmailAndPassword(email, password);
+
+      log('User signed in: ${user.uid}');
       emit(state.copyWith(
         isLoading: false,
         isSuccess: true,
@@ -54,7 +68,7 @@ class UserAuthCubit extends Cubit<UserAuthState> {
     }
   }
 
-  logOut() async {
+  Future<void> logOut() async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));
       await _userAuthRepository.logOut();
@@ -71,7 +85,7 @@ class UserAuthCubit extends Cubit<UserAuthState> {
     }
   }
 
-  changePassword(String newPassword) async {
+  Future<void> changePassword(String newPassword) async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));
       await _userAuthRepository.updatePassword(newPassword);
@@ -85,5 +99,11 @@ class UserAuthCubit extends Cubit<UserAuthState> {
         errorMessage: e.toString(),
       ));
     }
+  }
+
+  @override
+  Future<void> close() {
+    _userSub?.cancel();
+    return super.close();
   }
 }

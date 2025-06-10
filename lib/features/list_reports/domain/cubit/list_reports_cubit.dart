@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/domain/cubit/user_auth_cubit.dart';
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
 import 'package:pbnhs/features/list_reports/repository/model/list_reports_model.dart';
 import 'package:pbnhs/features/list_reports/repository/list_report_repo.dart';
@@ -17,27 +18,22 @@ class ListReportsCubit extends Cubit<ListReportsState> {
   ListReportsCubit(this._listReportsRepository, this._userAuthCubit)
       : super(const ListReportsState());
 
-  getReports(String selectedType) async {
+  getReports(String selectedType, UserVm user) async {
     emit(state.copyWith(
       isLoading: true,
       isSuccess: false,
     ));
     try {
-      final currentUser = _userAuthCubit.state.user;
-      if (currentUser == null) {
-        throw Exception('User is not authenticated or user data is missing.');
-      }
-
       List<ListReportsModel> reports;
-      if (currentUser.role == 'admin') {
+      if (user.role == 'admin') {
         reports = await _listReportsRepository.getReportsByCreator(
           type: selectedType,
-          createdBy: currentUser.uid,
+          createdBy: user.uid,
         );
-      } else if (currentUser.role == 'super-admin') {
+      } else if (user.role == 'super-admin') {
         reports = await _listReportsRepository.getReport(selectedType);
       } else {
-        throw Exception('Unauthorized role: ${currentUser.role}');
+        throw Exception('Unauthorized role: ${user.role}');
       }
 
       emit(state.copyWith(
@@ -126,6 +122,7 @@ class ListReportsCubit extends Cubit<ListReportsState> {
       if (fileData != null && fileName != null) {
         fileUrl = await uploadFile(fileData, fileName);
       }
+
       final report = ListReportsModel(
         id: '',
         title: title,
@@ -134,12 +131,19 @@ class ListReportsCubit extends Cubit<ListReportsState> {
         createdBy: createdBy,
         link: fileUrl ?? '',
       );
+
       await _listReportsRepository.addReport(report);
-      final updatedReports = await _listReportsRepository.getReport(type);
+
+      final currentUser = _userAuthCubit.state.user;
+      if (currentUser == null) {
+        throw Exception('User is not authenticated or user data is missing.');
+      }
+
+      await getReports(type, currentUser);
+
       emit(state.copyWith(
         isLoading: false,
         isSuccess: true,
-        reports: updatedReports,
       ));
     } catch (e) {
       emit(state.copyWith(

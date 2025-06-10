@@ -23,7 +23,7 @@ class ListReportsRepository {
     final querySnapshot = await FirebaseFirestore.instance
         .collection('reports')
         .where('type', isEqualTo: type)
-        .where('createdBy', isEqualTo: createdBy)
+        .where('adminId', isEqualTo: createdBy)
         .get();
 
     return querySnapshot.docs.map((doc) {
@@ -35,10 +35,11 @@ class ListReportsRepository {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) throw Exception("User not authenticated");
 
-    await _firestore.collection('reports').add({
+    final docRef = await _firestore.collection('reports').add({
       ...report.toJson(),
-      'adminId': user.uid, // ✅ Ensure userId is stored in Firestore
+      'adminId': user.uid,
     });
+    await docRef.update({'id': docRef.id});
   }
 
   Future<void> updateReport(ListReportsModel report) async {

@@ -16,6 +16,9 @@ class UserAuthRepository implements IUserAuthRepository {
         _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
+  Stream<User?> get userStream => _firebaseAuth.authStateChanges();
+
+  @override
   Future<UserVm> signInWithEmailAndPassword(
       String email, String password) async {
     try {

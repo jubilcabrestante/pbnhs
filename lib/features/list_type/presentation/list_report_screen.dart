@@ -33,51 +33,52 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              "List of Types",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-            const SizedBox(height: 16),
-            BlocBuilder<ListTypeCubit, ListTypeState>(
-              builder: (context, typestate) {
-                return Row(
-                  children: typestate.typeVm.map((type) {
-                    return Container(
-                      width: 250,
-                      height: 50,
-                      margin: const EdgeInsets.only(right: 10),
-                      child: CustomButton(
-                        text: type.typeName,
-                        textStyle: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: typestate.selectedType == type.typeName
-                              ? AppColors.textWhite
-                              : AppColors.textBlack,
-                        ),
-                        color: typestate.selectedType == type.typeName
-                            ? AppColors.primary
-                            : AppColors.secondarybackground,
-                        onTap: () async {
-                          context
-                              .read<ListReportsCubit>()
-                              .getReports(type.typeName);
-                          context.read<ListTypeCubit>().updateType(type);
-                        },
-                      ),
+        child: BlocBuilder<UserAuthCubit, UserAuthState>(
+          builder: (context, userAuthstate) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "List of Types",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+                const SizedBox(height: 16),
+                BlocBuilder<ListTypeCubit, ListTypeState>(
+                  builder: (context, typestate) {
+                    return Row(
+                      children: typestate.typeVm.map((type) {
+                        return Container(
+                          width: 250,
+                          height: 50,
+                          margin: const EdgeInsets.only(right: 10),
+                          child: CustomButton(
+                            text: type.typeName,
+                            textStyle: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: typestate.selectedType == type.typeName
+                                  ? AppColors.textWhite
+                                  : AppColors.textBlack,
+                            ),
+                            color: typestate.selectedType == type.typeName
+                                ? AppColors.primary
+                                : AppColors.secondarybackground,
+                            onTap: () async {
+                              context.read<ListReportsCubit>().getReports(
+                                    type.typeName,
+                                    userAuthstate.user!,
+                                  );
+                              context.read<ListTypeCubit>().updateType(type);
+                            },
+                          ),
+                        );
+                      }).toList(),
                     );
-                  }).toList(),
-                );
-              },
-            ),
-            const SizedBox(width: 20),
-            Expanded(
-              child: BlocBuilder<UserAuthCubit, UserAuthState>(
-                builder: (context, userAuthstate) {
-                  return BlocBuilder<ListTypeCubit, ListTypeState>(
+                  },
+                ),
+                const SizedBox(width: 20),
+                Expanded(
+                  child: BlocBuilder<ListTypeCubit, ListTypeState>(
                     builder: (context, typestate) {
                       return BlocBuilder<ListReportsCubit, ListReportsState>(
                         builder: (context, state) {
@@ -334,9 +335,9 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                                                                         }
                                                                         Navigator.pop(
                                                                             context);
-                                                                        context
-                                                                            .read<ListReportsCubit>()
-                                                                            .getReports(typestate.selectedType!);
+                                                                        context.read<ListReportsCubit>().getReports(
+                                                                            typestate.selectedType!,
+                                                                            userAuthstate.user!);
                                                                       },
                                                                       child: const Text(
                                                                           "Delete",
@@ -370,11 +371,11 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                         },
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          ],
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );
