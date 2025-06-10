@@ -61,7 +61,7 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                         color: typestate.selectedType == type.typeName
                             ? AppColors.primary
                             : AppColors.secondarybackground,
-                        onTap: () {
+                        onTap: () async {
                           context
                               .read<ListReportsCubit>()
                               .getReports(type.typeName);

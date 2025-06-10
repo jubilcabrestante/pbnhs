@@ -18,6 +18,10 @@ class ListReportsCubit extends Cubit<ListReportsState> {
       : super(const ListReportsState());
 
   getReports(String selectedType) async {
+    emit(state.copyWith(
+      isLoading: true,
+      isSuccess: false,
+    ));
     try {
       final currentUser = _userAuthCubit.state.user;
       if (currentUser == null) {
@@ -36,8 +40,6 @@ class ListReportsCubit extends Cubit<ListReportsState> {
         throw Exception('Unauthorized role: ${currentUser.role}');
       }
 
-      log("current user role: ${currentUser.role}");
-      log('Reports fetched successfully: ${reports.length}');
       emit(state.copyWith(
         isLoading: false,
         isSuccess: true,
