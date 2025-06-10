@@ -25,6 +25,7 @@ class _MyAppState extends State<MyApp> {
   final type = TypeRepository();
   final userauth = UserAuthRepository();
   final list = ListReportsRepository();
+  final userAuth = UserAuthCubit(UserAuthRepository());
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -37,7 +38,7 @@ class _MyAppState extends State<MyApp> {
           BlocProvider(
               create: (context) => AccountCubit(userAccountRepository)),
           BlocProvider(create: (context) => UserAuthCubit(userauth)),
-          BlocProvider(create: (context) => ListReportsCubit(list)),
+          BlocProvider(create: (context) => ListReportsCubit(list, userAuth)),
           BlocProvider(
             create: (context) => ForgotPasswordCubit(userauth),
           ),

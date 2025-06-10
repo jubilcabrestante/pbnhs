@@ -25,8 +25,7 @@ mixin _$ListReportsModel {
   String get title => throw _privateConstructorUsedError;
   String get link => throw _privateConstructorUsedError;
   @TimestampConverter()
-  DateTime get dateUploaded =>
-      throw _privateConstructorUsedError; // Custom converter
+  DateTime get dateUploaded => throw _privateConstructorUsedError;
   String get createdBy => throw _privateConstructorUsedError;
 
   /// Serializes this ListReportsModel to a JSON map.
@@ -196,7 +195,6 @@ class _$ListReportsModelImpl implements _ListReportsModel {
   @override
   @TimestampConverter()
   final DateTime dateUploaded;
-// Custom converter
   @override
   final String createdBy;
 
@@ -264,7 +262,7 @@ abstract class _ListReportsModel implements ListReportsModel {
   String get link;
   @override
   @TimestampConverter()
-  DateTime get dateUploaded; // Custom converter
+  DateTime get dateUploaded;
   @override
   String get createdBy;
 

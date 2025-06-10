@@ -22,7 +22,7 @@ class _AppScreenState extends State<AppScreen> {
     {
       "title": "List of Reports",
       "icon": Icons.list,
-      "route": const ListTypeRoute(),
+      "route": const ListReportsRoute(),
     },
     {
       "title": "Accounts",
@@ -107,7 +107,7 @@ class _AppScreenState extends State<AppScreen> {
                                 itemCount: filteredNavItems.length,
                                 itemBuilder: (context, index) {
                                   final item = filteredNavItems[index];
-                                  final isSelected = item["route"] != null && 
+                                  final isSelected = item["route"] != null &&
                                       activeIndex == index;
 
                                   return GestureDetector(
@@ -159,14 +159,8 @@ class _AppScreenState extends State<AppScreen> {
                         ),
                       ),
                       const SizedBox(width: 20),
-                      // Main Content Area
                       Expanded(
-                        child: Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
-                          child: child,
-                        ),
+                        child: child,
                       ),
                     ],
                   ),

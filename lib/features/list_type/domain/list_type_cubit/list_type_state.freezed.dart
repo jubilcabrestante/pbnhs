@@ -20,8 +20,8 @@ mixin _$ListTypeState {
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isSuccess => throw _privateConstructorUsedError;
   bool get isRole => throw _privateConstructorUsedError;
-  List<TypeModel> get typeModel => throw _privateConstructorUsedError;
-  TypeModel? get selectedType => throw _privateConstructorUsedError;
+  List<TypeVm> get typeVm => throw _privateConstructorUsedError;
+  String? get selectedType => throw _privateConstructorUsedError;
 
   /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.
@@ -41,10 +41,8 @@ abstract class $ListTypeStateCopyWith<$Res> {
       bool isLoading,
       bool isSuccess,
       bool isRole,
-      List<TypeModel> typeModel,
-      TypeModel? selectedType});
-
-  $TypeModelCopyWith<$Res>? get selectedType;
+      List<TypeVm> typeVm,
+      String? selectedType});
 }
 
 /// @nodoc
@@ -66,7 +64,7 @@ class _$ListTypeStateCopyWithImpl<$Res, $Val extends ListTypeState>
     Object? isLoading = null,
     Object? isSuccess = null,
     Object? isRole = null,
-    Object? typeModel = null,
+    Object? typeVm = null,
     Object? selectedType = freezed,
   }) {
     return _then(_value.copyWith(
@@ -86,29 +84,15 @@ class _$ListTypeStateCopyWithImpl<$Res, $Val extends ListTypeState>
           ? _value.isRole
           : isRole // ignore: cast_nullable_to_non_nullable
               as bool,
-      typeModel: null == typeModel
-          ? _value.typeModel
-          : typeModel // ignore: cast_nullable_to_non_nullable
-              as List<TypeModel>,
+      typeVm: null == typeVm
+          ? _value.typeVm
+          : typeVm // ignore: cast_nullable_to_non_nullable
+              as List<TypeVm>,
       selectedType: freezed == selectedType
           ? _value.selectedType
           : selectedType // ignore: cast_nullable_to_non_nullable
-              as TypeModel?,
+              as String?,
     ) as $Val);
-  }
-
-  /// Create a copy of ListTypeState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $TypeModelCopyWith<$Res>? get selectedType {
-    if (_value.selectedType == null) {
-      return null;
-    }
-
-    return $TypeModelCopyWith<$Res>(_value.selectedType!, (value) {
-      return _then(_value.copyWith(selectedType: value) as $Val);
-    });
   }
 }
 
@@ -125,11 +109,8 @@ abstract class _$$ListTypeStateImplCopyWith<$Res>
       bool isLoading,
       bool isSuccess,
       bool isRole,
-      List<TypeModel> typeModel,
-      TypeModel? selectedType});
-
-  @override
-  $TypeModelCopyWith<$Res>? get selectedType;
+      List<TypeVm> typeVm,
+      String? selectedType});
 }
 
 /// @nodoc
@@ -149,7 +130,7 @@ class __$$ListTypeStateImplCopyWithImpl<$Res>
     Object? isLoading = null,
     Object? isSuccess = null,
     Object? isRole = null,
-    Object? typeModel = null,
+    Object? typeVm = null,
     Object? selectedType = freezed,
   }) {
     return _then(_$ListTypeStateImpl(
@@ -169,14 +150,14 @@ class __$$ListTypeStateImplCopyWithImpl<$Res>
           ? _value.isRole
           : isRole // ignore: cast_nullable_to_non_nullable
               as bool,
-      typeModel: null == typeModel
-          ? _value._typeModel
-          : typeModel // ignore: cast_nullable_to_non_nullable
-              as List<TypeModel>,
+      typeVm: null == typeVm
+          ? _value._typeVm
+          : typeVm // ignore: cast_nullable_to_non_nullable
+              as List<TypeVm>,
       selectedType: freezed == selectedType
           ? _value.selectedType
           : selectedType // ignore: cast_nullable_to_non_nullable
-              as TypeModel?,
+              as String?,
     ));
   }
 }
@@ -189,9 +170,9 @@ class _$ListTypeStateImpl implements _ListTypeState {
       this.isLoading = false,
       this.isSuccess = false,
       this.isRole = false,
-      final List<TypeModel> typeModel = const [],
+      final List<TypeVm> typeVm = const [],
       this.selectedType})
-      : _typeModel = typeModel;
+      : _typeVm = typeVm;
 
   @override
   final String? errorMessage;
@@ -204,21 +185,21 @@ class _$ListTypeStateImpl implements _ListTypeState {
   @override
   @JsonKey()
   final bool isRole;
-  final List<TypeModel> _typeModel;
+  final List<TypeVm> _typeVm;
   @override
   @JsonKey()
-  List<TypeModel> get typeModel {
-    if (_typeModel is EqualUnmodifiableListView) return _typeModel;
+  List<TypeVm> get typeVm {
+    if (_typeVm is EqualUnmodifiableListView) return _typeVm;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_typeModel);
+    return EqualUnmodifiableListView(_typeVm);
   }
 
   @override
-  final TypeModel? selectedType;
+  final String? selectedType;
 
   @override
   String toString() {
-    return 'ListTypeState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole, typeModel: $typeModel, selectedType: $selectedType)';
+    return 'ListTypeState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole, typeVm: $typeVm, selectedType: $selectedType)';
   }
 
   @override
@@ -233,8 +214,7 @@ class _$ListTypeStateImpl implements _ListTypeState {
             (identical(other.isSuccess, isSuccess) ||
                 other.isSuccess == isSuccess) &&
             (identical(other.isRole, isRole) || other.isRole == isRole) &&
-            const DeepCollectionEquality()
-                .equals(other._typeModel, _typeModel) &&
+            const DeepCollectionEquality().equals(other._typeVm, _typeVm) &&
             (identical(other.selectedType, selectedType) ||
                 other.selectedType == selectedType));
   }
@@ -246,7 +226,7 @@ class _$ListTypeStateImpl implements _ListTypeState {
       isLoading,
       isSuccess,
       isRole,
-      const DeepCollectionEquality().hash(_typeModel),
+      const DeepCollectionEquality().hash(_typeVm),
       selectedType);
 
   /// Create a copy of ListTypeState
@@ -264,8 +244,8 @@ abstract class _ListTypeState implements ListTypeState {
       final bool isLoading,
       final bool isSuccess,
       final bool isRole,
-      final List<TypeModel> typeModel,
-      final TypeModel? selectedType}) = _$ListTypeStateImpl;
+      final List<TypeVm> typeVm,
+      final String? selectedType}) = _$ListTypeStateImpl;
 
   @override
   String? get errorMessage;
@@ -276,9 +256,9 @@ abstract class _ListTypeState implements ListTypeState {
   @override
   bool get isRole;
   @override
-  List<TypeModel> get typeModel;
+  List<TypeVm> get typeVm;
   @override
-  TypeModel? get selectedType;
+  String? get selectedType;
 
   /// Create a copy of ListTypeState
   /// with the given fields replaced by the non-null parameter values.

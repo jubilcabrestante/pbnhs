@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pbnhs/features/list_type/repository/type_model/type_model.dart';
+import 'package:pbnhs/features/list_type/repository/type_model/type_vm.dart';
 import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_state.dart';
 import 'package:pbnhs/features/list_type/repository/type_repo.dart';
 
@@ -12,12 +12,12 @@ class ListTypeCubit extends Cubit<ListTypeState> {
     emit(state.copyWith(isLoading: true, errorMessage: null));
 
     try {
-      List<TypeModel> types = await _typeRepository.getTypes();
+      List<TypeVm> types = await _typeRepository.getTypes();
 
       if (types.isNotEmpty) {
         emit(state.copyWith(
           isSuccess: true,
-          typeModel: types,
+          typeVm: types,
           isLoading: false,
         ));
       } else {
@@ -29,5 +29,9 @@ class ListTypeCubit extends Cubit<ListTypeState> {
         isLoading: false,
       ));
     }
+  }
+
+  updateType(TypeVm type) {
+    emit(state.copyWith(selectedType: type.typeName));
   }
 }

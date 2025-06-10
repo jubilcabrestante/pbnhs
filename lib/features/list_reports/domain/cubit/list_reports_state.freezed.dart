@@ -20,7 +20,6 @@ mixin _$ListReportsState {
   bool get isSuccess => throw _privateConstructorUsedError;
   String? get errorMessage => throw _privateConstructorUsedError;
   List<ListReportsModel>? get reports => throw _privateConstructorUsedError;
-  UserVm? get user => throw _privateConstructorUsedError;
 
   /// Create a copy of ListReportsState
   /// with the given fields replaced by the non-null parameter values.
@@ -39,8 +38,7 @@ abstract class $ListReportsStateCopyWith<$Res> {
       {bool isLoading,
       bool isSuccess,
       String? errorMessage,
-      List<ListReportsModel>? reports,
-      UserVm? user});
+      List<ListReportsModel>? reports});
 }
 
 /// @nodoc
@@ -62,7 +60,6 @@ class _$ListReportsStateCopyWithImpl<$Res, $Val extends ListReportsState>
     Object? isSuccess = null,
     Object? errorMessage = freezed,
     Object? reports = freezed,
-    Object? user = freezed,
   }) {
     return _then(_value.copyWith(
       isLoading: null == isLoading
@@ -81,10 +78,6 @@ class _$ListReportsStateCopyWithImpl<$Res, $Val extends ListReportsState>
           ? _value.reports
           : reports // ignore: cast_nullable_to_non_nullable
               as List<ListReportsModel>?,
-      user: freezed == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserVm?,
     ) as $Val);
   }
 }
@@ -101,8 +94,7 @@ abstract class _$$ListReportsStateImplCopyWith<$Res>
       {bool isLoading,
       bool isSuccess,
       String? errorMessage,
-      List<ListReportsModel>? reports,
-      UserVm? user});
+      List<ListReportsModel>? reports});
 }
 
 /// @nodoc
@@ -122,7 +114,6 @@ class __$$ListReportsStateImplCopyWithImpl<$Res>
     Object? isSuccess = null,
     Object? errorMessage = freezed,
     Object? reports = freezed,
-    Object? user = freezed,
   }) {
     return _then(_$ListReportsStateImpl(
       isLoading: null == isLoading
@@ -141,10 +132,6 @@ class __$$ListReportsStateImplCopyWithImpl<$Res>
           ? _value._reports
           : reports // ignore: cast_nullable_to_non_nullable
               as List<ListReportsModel>?,
-      user: freezed == user
-          ? _value.user
-          : user // ignore: cast_nullable_to_non_nullable
-              as UserVm?,
     ));
   }
 }
@@ -156,8 +143,7 @@ class _$ListReportsStateImpl implements _ListReportsState {
       {this.isLoading = false,
       this.isSuccess = false,
       this.errorMessage,
-      final List<ListReportsModel>? reports,
-      this.user})
+      final List<ListReportsModel>? reports})
       : _reports = reports;
 
   @override
@@ -179,11 +165,8 @@ class _$ListReportsStateImpl implements _ListReportsState {
   }
 
   @override
-  final UserVm? user;
-
-  @override
   String toString() {
-    return 'ListReportsState(isLoading: $isLoading, isSuccess: $isSuccess, errorMessage: $errorMessage, reports: $reports, user: $user)';
+    return 'ListReportsState(isLoading: $isLoading, isSuccess: $isSuccess, errorMessage: $errorMessage, reports: $reports)';
   }
 
   @override
@@ -197,13 +180,12 @@ class _$ListReportsStateImpl implements _ListReportsState {
                 other.isSuccess == isSuccess) &&
             (identical(other.errorMessage, errorMessage) ||
                 other.errorMessage == errorMessage) &&
-            const DeepCollectionEquality().equals(other._reports, _reports) &&
-            (identical(other.user, user) || other.user == user));
+            const DeepCollectionEquality().equals(other._reports, _reports));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, isLoading, isSuccess,
-      errorMessage, const DeepCollectionEquality().hash(_reports), user);
+      errorMessage, const DeepCollectionEquality().hash(_reports));
 
   /// Create a copy of ListReportsState
   /// with the given fields replaced by the non-null parameter values.
@@ -220,8 +202,7 @@ abstract class _ListReportsState implements ListReportsState {
       {final bool isLoading,
       final bool isSuccess,
       final String? errorMessage,
-      final List<ListReportsModel>? reports,
-      final UserVm? user}) = _$ListReportsStateImpl;
+      final List<ListReportsModel>? reports}) = _$ListReportsStateImpl;
 
   @override
   bool get isLoading;
@@ -231,8 +212,6 @@ abstract class _ListReportsState implements ListReportsState {
   String? get errorMessage;
   @override
   List<ListReportsModel>? get reports;
-  @override
-  UserVm? get user;
 
   /// Create a copy of ListReportsState
   /// with the given fields replaced by the non-null parameter values.

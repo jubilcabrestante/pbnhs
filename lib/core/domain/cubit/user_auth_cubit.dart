@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:pbnhs/core/domain/i_user_auth_repo.dart';
@@ -8,7 +9,30 @@ part 'user_auth_cubit.freezed.dart';
 
 class UserAuthCubit extends Cubit<UserAuthState> {
   final IUserAuthRepository _userAuthRepository;
-  UserAuthCubit(this._userAuthRepository) : super(UserAuthState());
+  UserAuthCubit(
+    this._userAuthRepository,
+  ) : super(UserAuthState()) {
+    getCurrentUserDetails();
+  }
+
+  getCurrentUserDetails() async {
+    try {
+      emit(state.copyWith(isLoading: true, errorMessage: null));
+      final firebaseUser = FirebaseAuth.instance.currentUser;
+      final user = await _userAuthRepository.getUserDetails(firebaseUser!.uid);
+      emit(state.copyWith(
+        isLoading: false,
+        isAuthenticated: true,
+        user: user,
+        isNewUser: user.isNewUser,
+      ));
+    } catch (e) {
+      emit(state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      ));
+    }
+  }
 
   signIn(String email, String password) async {
     try {

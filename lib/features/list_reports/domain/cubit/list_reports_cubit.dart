@@ -2,37 +2,41 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:pbnhs/core/domain/cubit/user_auth_cubit.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
 import 'package:pbnhs/features/list_reports/repository/model/list_reports_model.dart';
 import 'package:pbnhs/features/list_reports/repository/list_report_repo.dart';
 import 'dart:developer';
 import 'dart:io';
 
-// import '../../../accounts/repository/user_model/user_model.dart';
-
 class ListReportsCubit extends Cubit<ListReportsState> {
   final ListReportsRepository _listReportsRepository;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
+  final UserAuthCubit _userAuthCubit;
 
-  ListReportsCubit(this._listReportsRepository)
+  ListReportsCubit(this._listReportsRepository, this._userAuthCubit)
       : super(const ListReportsState());
 
-  Future<void> getReports(String selectedType) async {
+  getReports(String selectedType) async {
     try {
-      // Fetch user details to determine their role
-
-      List<ListReportsModel> reports;
-      if (state.user!.role == 'admin') {
-        reports = await _listReportsRepository.getReportsByCreator(
-          type: selectedType,
-          createdBy: state.user!.uid,
-        );
-      } else if (state.user!.role == 'super-admin') {
-        reports = await _listReportsRepository.getReport(selectedType);
-      } else {
-        throw Exception('Unauthorized role: ${state.user!.role}');
+      final currentUser = _userAuthCubit.state.user;
+      if (currentUser == null) {
+        throw Exception('User is not authenticated or user data is missing.');
       }
 
+      List<ListReportsModel> reports;
+      if (currentUser.role == 'admin') {
+        reports = await _listReportsRepository.getReportsByCreator(
+          type: selectedType,
+          createdBy: currentUser.uid,
+        );
+      } else if (currentUser.role == 'super-admin') {
+        reports = await _listReportsRepository.getReport(selectedType);
+      } else {
+        throw Exception('Unauthorized role: ${currentUser.role}');
+      }
+
+      log("current user role: ${currentUser.role}");
       log('Reports fetched successfully: ${reports.length}');
       emit(state.copyWith(
         isLoading: false,
@@ -99,7 +103,7 @@ class ListReportsCubit extends Cubit<ListReportsState> {
     }
   }
 
-  Future<void> addReport({
+  addReport({
     required String title,
     required String type,
     required String createdBy,
@@ -136,7 +140,7 @@ class ListReportsCubit extends Cubit<ListReportsState> {
     }
   }
 
-  Future<void> deleteReport(String reportId, String selectedType) async {
+  deleteReport(String reportId, String selectedType) async {
     try {
       emit(state.copyWith(isLoading: true, errorMessage: null));
       await _listReportsRepository.deleteReport(reportId);
@@ -176,7 +180,7 @@ class ListReportsCubit extends Cubit<ListReportsState> {
     }
   }
 
-  Future<void> updateReport({
+  updateReport({
     required String reportId,
     required String title,
     required String type,

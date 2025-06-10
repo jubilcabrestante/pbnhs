@@ -11,7 +11,7 @@ class ListReportsModel with _$ListReportsModel {
     required String type,
     required String title,
     required String link,
-    @TimestampConverter() required DateTime dateUploaded, // Custom converter
+    @TimestampConverter() required DateTime dateUploaded,
     required String createdBy,
   }) = _ListReportsModel;
 
@@ -26,7 +26,7 @@ class ListReportsModel with _$ListReportsModel {
     }
 
     return ListReportsModel(
-      id: doc.id,
+      id: doc.id, // ✅ Assign document ID
       type: data['type'] as String? ?? '',
       title: data['title'] as String? ?? '',
       link: data['link'] as String? ?? '',
@@ -35,29 +35,27 @@ class ListReportsModel with _$ListReportsModel {
     );
   }
 
-  static DateTime _parseDate(dynamic date) {
-    if (date is Timestamp) {
-      return date.toDate();
-    } else if (date is String) {
-      return DateTime.tryParse(date) ?? DateTime.now();
-    } else {
-      return DateTime.now();
-    }
+  static DateTime _parseDate(dynamic value) {
+    try {
+      if (value is Timestamp) return value.toDate();
+      if (value is String) return DateTime.parse(value);
+    } catch (_) {}
+    return DateTime.now(); // fallback
   }
 }
 
-/// Custom converter to handle Firestore Timestamp
+/// ✅ Custom Timestamp converter for Firestore + JSON
 class TimestampConverter implements JsonConverter<DateTime, dynamic> {
   const TimestampConverter();
 
   @override
   DateTime fromJson(dynamic json) {
     if (json is Timestamp) {
-      return json.toDate(); // Convert Firestore Timestamp to DateTime
+      return json.toDate();
     } else if (json is String) {
-      return DateTime.tryParse(json) ?? DateTime.now(); // Handle string dates
+      return DateTime.tryParse(json) ?? DateTime.now();
     } else {
-      throw Exception("Invalid date format");
+      throw Exception("Unsupported date format: $json");
     }
   }
 

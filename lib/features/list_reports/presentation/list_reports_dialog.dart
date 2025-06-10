@@ -1,32 +1,50 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
 import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
+import 'package:pbnhs/core/enum/enum_action.dart';
 import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_cubit.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
-import 'dart:typed_data';
 
-class ListReportsDialog extends StatefulWidget {
+class ReportDialog extends StatefulWidget {
+  final EnumAction action;
   final String selectedType;
-  final String user;
+  final String? user;
+  final String? reportId;
+  final String? initialTitle;
+  final String? initialFileLink;
 
-  const ListReportsDialog({
+  const ReportDialog({
     super.key,
+    required this.action,
     required this.selectedType,
-    required this.user,
+    this.user,
+    this.reportId,
+    this.initialTitle,
+    this.initialFileLink,
   });
 
   @override
-  State<ListReportsDialog> createState() => _ListReportsDialogState();
+  State<ReportDialog> createState() => _ReportDialogState();
 }
 
-class _ListReportsDialogState extends State<ListReportsDialog> {
+class _ReportDialogState extends State<ReportDialog> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _title = TextEditingController();
+  late final TextEditingController _title;
   Uint8List? _selectedFileData;
   String? _selectedFileName;
-  String? _fileError; // To track file validation errors
+  String? _fileError;
+
+  @override
+  void initState() {
+    super.initState();
+    _title = TextEditingController(text: widget.initialTitle ?? '');
+    if (widget.action == EnumAction.update && widget.initialFileLink != null) {
+      _selectedFileName = widget.initialFileLink!.split('/').last;
+    }
+  }
 
   Future<void> _pickFile() async {
     final result = await context.read<ListReportsCubit>().selectFile();
@@ -34,7 +52,9 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
       setState(() {
         _selectedFileData = result['data'] as Uint8List?;
         _selectedFileName = result['name'] as String?;
-        _fileError = null; // Clear error when a file is selected
+        if (widget.action == EnumAction.add) {
+          _fileError = null;
+        }
       });
     }
   }
@@ -43,26 +63,40 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
     setState(() {
       _selectedFileData = null;
       _selectedFileName = null;
-      _fileError = 'Please select a file'; // Show error if file is removed
+      if (widget.action == EnumAction.add) {
+        _fileError = 'Please select a file';
+      }
     });
   }
 
   void _validateAndSubmit() {
-    final isValidForm = _formKey.currentState!.validate();
+    final isValidForm = _formKey.currentState?.validate() ?? false;
     final hasFile = _selectedFileData != null && _selectedFileName != null;
 
-    setState(() {
-      _fileError = hasFile ? null : 'Please select a file'; // Set error if no file is selected
-    });
+    if (widget.action == EnumAction.add) {
+      setState(() {
+        _fileError = hasFile ? null : 'Please select a file';
+      });
+    }
 
-    if (isValidForm && hasFile) {
-      context.read<ListReportsCubit>().addReport(
-            title: _title.text,
-            type: widget.selectedType,
-            createdBy: widget.user,
-            fileData: _selectedFileData,
-            fileName: _selectedFileName,
-          );
+    if (isValidForm && (widget.action == EnumAction.update || hasFile)) {
+      if (widget.action == EnumAction.add) {
+        context.read<ListReportsCubit>().addReport(
+              title: _title.text,
+              type: widget.selectedType,
+              createdBy: widget.user!,
+              fileData: _selectedFileData,
+              fileName: _selectedFileName,
+            );
+      } else {
+        context.read<ListReportsCubit>().updateReport(
+              reportId: widget.reportId!,
+              title: _title.text,
+              type: widget.selectedType,
+              fileData: _selectedFileData,
+              fileName: _selectedFileName,
+            );
+      }
     }
   }
 
@@ -82,9 +116,9 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      'Submit Report',
-                      style: TextStyle(
+                    Text(
+                      '${widget.action.name} Report',
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -99,7 +133,8 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                 CustomTextfield(
                   controller: _title,
                   label: 'Title',
-                  validator: (value) => Validators.validateField(value, 'Title'),
+                  validator: (value) =>
+                      Validators.validateField(value, 'Title'),
                 ),
                 const SizedBox(height: 10),
                 if (_selectedFileName != null)
@@ -127,7 +162,9 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     CustomButton(
-                      text: 'Select File',
+                      text: widget.action == EnumAction.update
+                          ? 'Select New File'
+                          : 'Select File',
                       onTap: _pickFile,
                     ),
                     if (_fileError != null)
@@ -158,7 +195,7 @@ class _ListReportsDialogState extends State<ListReportsDialog> {
                     return state.isLoading
                         ? const CircularProgressIndicator()
                         : CustomButton(
-                            text: 'Submit Report',
+                            text: '${widget.action.name} Report',
                             onTap: _validateAndSubmit,
                           );
                   },
