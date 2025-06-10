@@ -2,12 +2,14 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
 import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 import 'package:pbnhs/features/accounts/domain/i_user_account_repo.dart';
 
 class UserAccountRepository implements IUserAccountRepository {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
+  final String adminCollection = 'admin';
 
   UserAccountRepository({
     FirebaseAuth? firebaseAuth,
@@ -15,44 +17,32 @@ class UserAccountRepository implements IUserAccountRepository {
   })  : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
         _firestore = firestore ?? FirebaseFirestore.instance;
 
-  /// Stream the current authenticated user
   @override
   Stream<User?> get currentUserStream => _firebaseAuth.authStateChanges();
 
   @override
   Future<void> createUserWithEmailAndPassword(
-      UserModel user, String password, String adminPassword) async {
-    UserCredential? userCredential;
-
+      AccountVm user, String password) async {
     try {
-      // ✅ Store the current admin user before creating a new account
-      User? currentUser = _firebaseAuth.currentUser;
-      String? currentEmail = currentUser!.email;
-
-      // ✅ Create user in Firebase Auth first
-      userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.createUserWithEmailAndPassword(
         email: user.email,
         password: password,
       );
 
-      if (userCredential.user == null) {
-        throw Exception("User creation failed.");
-      }
+      final authUser = userCredential.user;
+      if (authUser == null) throw Exception("User creation failed.");
 
-      String newUserId = userCredential.user!.uid;
-      final newUser = user.copyWith(uid: newUserId);
+      final docRef = _firestore.collection(adminCollection).doc(authUser.uid);
 
-      // ✅ Sign back in with the original admin account
-      if (currentEmail != null) {
-        await _firebaseAuth.signInWithEmailAndPassword(
-          email: currentEmail,
-          password: adminPassword,
-        );
-      } else {
-        log("Failed to sign back in as admin. Please re-authenticate.");
-      }
+      final newUser = UserVm(
+        uid: user.uid,
+        role: user.role,
+        name: user.name,
+        email: user.email,
+        isNewUser: user.isNewUser,
+      );
 
-      return await saveUser(newUser);
+      await docRef.set(newUser.toJson());
     } catch (e) {
       log("Failed to create user: ${e.toString()}");
       rethrow;
@@ -60,12 +50,12 @@ class UserAccountRepository implements IUserAccountRepository {
   }
 
   @override
-  Future<List<UserModel>> getUsers() async {
+  Future<List<AccountVm>> getUsers() async {
     try {
       QuerySnapshot querySnapshot = await _firestore.collection('admin').get();
 
-      List<UserModel> users = querySnapshot.docs.map((doc) {
-        return UserModel.fromJson(doc.data() as Map<String, dynamic>);
+      List<AccountVm> users = querySnapshot.docs.map((doc) {
+        return AccountVm.fromJson(doc.data() as Map<String, dynamic>);
       }).toList();
 
       log('Fetched users: $users');
@@ -77,11 +67,13 @@ class UserAccountRepository implements IUserAccountRepository {
   }
 
   @override
-  Future<void> saveUser(UserModel user) async {
+  Future<void> updateUser(AccountVm user) async {
     try {
-      await _firestore.collection('admin').doc(user.uid).set(user.toJson());
+      final docRef = _firestore.collection(adminCollection).doc(user.uid);
+      await docRef.set(user.toJson(), SetOptions(merge: true));
+      log("User updated: ${user.uid}");
     } catch (e) {
-      log("Failed to save user: ${e.toString()}");
+      log("Failed to update user: ${e.toString()}");
       rethrow;
     }
   }

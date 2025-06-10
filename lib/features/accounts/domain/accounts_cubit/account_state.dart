@@ -1,6 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
-
+import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
 part 'account_state.freezed.dart';
 
 @freezed
@@ -10,7 +9,6 @@ class AccountState with _$AccountState {
     @Default(false) bool isLoading,
     @Default(false) bool isSuccess,
     @Default(false) bool isRole,
-    List<UserModel>? users,
-    UserModel? currentUser,
+    List<AccountVm>? users,
   }) = _AccountState;
 }

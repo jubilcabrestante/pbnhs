@@ -5,14 +5,10 @@ extension UserRoleExtension on UserRole {
     switch (role) {
       case 'super-admin':
         return UserRole.superAdmin;
-      case 'admin':
+      case 'admin': // Corrected
         return UserRole.admin;
       default:
-        return null; // Return null for unknown roles
+        return null; // Handle unknown roles gracefully
     }
-  }
-
-  String toShortString() {
-    return toString().split('.').last;
   }
 }

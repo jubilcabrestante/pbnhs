@@ -1,12 +1,12 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_model.dart';
+part of 'account_vm.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-UserVm _$UserVmFromJson(Map<String, dynamic> json) => UserVm(
+AccountVm _$AccountVmFromJson(Map<String, dynamic> json) => AccountVm(
       uid: json['uid'] as String,
       role: json['role'] as String,
       name: json['name'] as String,
@@ -14,7 +14,7 @@ UserVm _$UserVmFromJson(Map<String, dynamic> json) => UserVm(
       isNewUser: json['isNewUser'] as bool,
     );
 
-Map<String, dynamic> _$UserVmToJson(UserVm instance) => <String, dynamic>{
+Map<String, dynamic> _$AccountVmToJson(AccountVm instance) => <String, dynamic>{
       'uid': instance.uid,
       'role': instance.role,
       'name': instance.name,

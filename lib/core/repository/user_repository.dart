@@ -1,12 +1,13 @@
 import 'dart:developer';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pbnhs/core/domain/i_user_auth_repo.dart';
 import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
-import 'package:pbnhs/features/login/domain/i_user_auth_repo.dart';
 
 class UserAuthRepository implements IUserAuthRepository {
   final FirebaseAuth _firebaseAuth;
   final FirebaseFirestore _firestore;
+  final String adminCollection = 'admin';
 
   UserAuthRepository({
     FirebaseAuth? firebaseAuth,
@@ -15,23 +16,26 @@ class UserAuthRepository implements IUserAuthRepository {
         _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
-  Stream<User?> get user {
-    return _firebaseAuth.authStateChanges();
-  }
-
-  Future<String?> getCurrentUserId() async {
-    return _firebaseAuth.currentUser?.uid;
-  }
-
-  @override
-  Future<User?> signIn(String email, String password) async {
+  Future<UserVm> signInWithEmailAndPassword(
+      String email, String password) async {
     try {
-      UserCredential userCredential =
-          await _firebaseAuth.signInWithEmailAndPassword(
+      final userCredential = await _firebaseAuth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return userCredential.user;
+
+      final user = userCredential.user;
+      if (user == null) {
+        throw Exception("User not found after sign-in");
+      }
+
+      final doc =
+          await _firestore.collection(adminCollection).doc(user.uid).get();
+      if (!doc.exists) {
+        throw Exception("User data not found in Firestore");
+      }
+
+      return UserVm.fromJson(doc.data()!);
     } catch (e) {
       log("Sign-in failed: ${e.toString()}");
       rethrow;
@@ -68,7 +72,7 @@ class UserAuthRepository implements IUserAuthRepository {
 
         final userId = user.uid;
         final userDocRef =
-            FirebaseFirestore.instance.collection('admin').doc(userId);
+            FirebaseFirestore.instance.collection(adminCollection).doc(userId);
 
         // 🔄 Create or update 'isNewUser' field
         await userDocRef.set(
@@ -85,13 +89,13 @@ class UserAuthRepository implements IUserAuthRepository {
   }
 
   @override
-  Future<UserModel> getUserDetails(String uid) async {
+  Future<UserVm> getUserDetails(String uid) async {
     try {
       DocumentSnapshot userDoc =
-          await _firestore.collection('admin').doc(uid).get();
+          await _firestore.collection(adminCollection).doc(uid).get();
 
       if (userDoc.exists) {
-        return UserModel.fromDocument(userDoc);
+        return UserVm.fromJson(userDoc.data() as Map<String, dynamic>);
       } else {
         throw Exception("User not found");
       }

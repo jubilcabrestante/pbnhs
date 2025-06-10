@@ -49,18 +49,14 @@ class _ListReportsScreenState extends State<ListReportsScreen> {
                     CustomButton(
                       text: 'Submit Report',
                       onTap: () async {
-                        final user = await context
-                            .read<ListReportsCubit>()
-                            .fetchUserDetails();
-
                         if (!context.mounted) return;
 
-                        if (user != null) {
+                        if (state.user != null) {
                           showDialog(
                             context: context,
                             builder: (context) => ListReportsDialog(
                               selectedType: selectedType,
-                              user: user.name,
+                              user: state.user!.name,
                             ),
                           );
                         } else {

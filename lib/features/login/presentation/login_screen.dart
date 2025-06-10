@@ -4,9 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/app/routes/app_router.gr.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
 import 'package:pbnhs/core/constants/colors.dart';
-import 'package:pbnhs/features/login/domain/cubit/user_auth_cubit.dart';
+import 'package:pbnhs/core/domain/cubit/user_auth_cubit.dart';
 import '../../../core/utils/validators.dart';
-import '../domain/cubit/user_auth_state.dart';
 
 @RoutePage()
 class LoginScreen extends StatefulWidget {
@@ -28,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
       listener: (context, state) {
         if (!mounted) return;
 
-        if (state.isSuccess && state.userAuthModel?.isAuthenticated == true) {
+        if (state.isSuccess && state.user != null) {
           if (state.isNewUser) {
             context.router.replace(const ChangePasswordRoute());
           } else {

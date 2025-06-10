@@ -2,45 +2,35 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:pbnhs/core/repository/user_repository.dart';
 import 'package:pbnhs/features/list_reports/domain/cubit/list_reports_state.dart';
 import 'package:pbnhs/features/list_reports/repository/model/list_reports_model.dart';
 import 'package:pbnhs/features/list_reports/repository/list_report_repo.dart';
 import 'dart:developer';
 import 'dart:io';
 
-import '../../../accounts/repository/user_model/user_model.dart';
+// import '../../../accounts/repository/user_model/user_model.dart';
 
 class ListReportsCubit extends Cubit<ListReportsState> {
   final ListReportsRepository _listReportsRepository;
   final FirebaseStorage _firebaseStorage = FirebaseStorage.instance;
-  final UserAuthRepository _userAuthRepository;
 
-  ListReportsCubit(this._listReportsRepository, this._userAuthRepository)
+  ListReportsCubit(this._listReportsRepository)
       : super(const ListReportsState());
 
   Future<void> getReports(String selectedType) async {
-    log('Fetching reports for type: $selectedType');
-    emit(state.copyWith(isLoading: true, errorMessage: null));
-
     try {
       // Fetch user details to determine their role
-      final user = await fetchUserDetails();
-      if (user == null) {
-        throw Exception('Failed to fetch user details');
-      }
 
-      // Determine query based on user role
       List<ListReportsModel> reports;
-      if (user.role == 'admin') {
+      if (state.user!.role == 'admin') {
         reports = await _listReportsRepository.getReportsByCreator(
           type: selectedType,
-          createdBy: user.uid,
+          createdBy: state.user!.uid,
         );
-      } else if (user.role == 'super-admin') {
+      } else if (state.user!.role == 'super-admin') {
         reports = await _listReportsRepository.getReport(selectedType);
       } else {
-        throw Exception('Unauthorized role: ${user.role}');
+        throw Exception('Unauthorized role: ${state.user!.role}');
       }
 
       log('Reports fetched successfully: ${reports.length}');
@@ -57,21 +47,6 @@ class ListReportsCubit extends Cubit<ListReportsState> {
         errorMessage: e.toString(),
       ));
     }
-  }
-
-  Future<UserModel?> fetchUserDetails() async {
-    try {
-      final user = await _userAuthRepository.user.first;
-      if (user != null) {
-        UserModel userModel =
-            await _userAuthRepository.getUserDetails(user.uid);
-        log('Username: ${userModel.name}');
-        return userModel;
-      }
-    } catch (e) {
-      log('Error fetching user details: $e');
-    }
-    return null;
   }
 
   Future<Map<String, dynamic>?> selectFile() async {

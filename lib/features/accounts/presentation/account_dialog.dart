@@ -4,16 +4,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
 import 'package:pbnhs/core/common_widgets/custom_textfield.dart';
 import 'package:pbnhs/core/enum/user_roles.dart';
-import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
 import 'package:pbnhs/core/models/user_roles/user_roles_model.dart';
 import 'package:pbnhs/core/utils/validators.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
 
-import 'app_dialog.dart'; // Import AppDialog
-
 class AccountDialog extends StatefulWidget {
-  final UserModel? user;
+  final AccountVm? user;
   const AccountDialog({super.key, this.user});
 
   @override
@@ -25,8 +23,6 @@ class _AccountDialogState extends State<AccountDialog> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _adminPasswordController =
-      TextEditingController();
   UserRole? _selectedRole;
 
   @override
@@ -35,68 +31,25 @@ class _AccountDialogState extends State<AccountDialog> {
     if (widget.user != null) {
       _nameController.text = widget.user!.name;
       _emailController.text = widget.user!.email;
-      _selectedRole = UserRole.values.firstWhere(
-        (role) => role.toString().split('.').last == widget.user!.role,
-        orElse: () => UserRole.admin,
-      );
+      _selectedRole = UserRoleExtension.fromString(widget.user!.role);
     }
   }
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      final accountCubit = context.read<AccountCubit>();
-      final bool isEditing = widget.user != null;
+      final account = AccountVm(
+        name: _nameController.text.trim(),
+        email: _emailController.text.trim(),
+        role: UserRoles.getRoleName(_selectedRole!),
+        uid: widget.user!.uid,
+        isNewUser: widget.user!.isNewUser,
+      );
 
-      if (isEditing) {
-        final updatedUser = widget.user!.copyWith(
-          name: _nameController.text,
-          email: _emailController.text,
-          role: _selectedRole?.toString().split('.').last ?? '',
-        );
-        accountCubit.updateUser(updatedUser);
+      final cubit = context.read<AccountCubit>();
+      if (widget.user == null) {
+        cubit.createAccount(account, _passwordController.text.trim());
       } else {
-        // ✅ Ask admin for their password before creating an account
-        AppDialog.showModal(
-          context: context,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Text(
-                "Re-enter Admin Password",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 10),
-              CustomTextfield(
-                controller: _adminPasswordController,
-                label: "Admin Password",
-                obscure: true,
-                validator: (value) =>
-                    Validators.validateField(value, "Admin Password"),
-              ),
-              const SizedBox(height: 15),
-              CustomButton(
-                text: "Confirm",
-                onTap: () {
-                  if (_adminPasswordController.text.isNotEmpty) {
-                    context.maybePop();
-                    final newUser = UserModel(
-                      uid: '',
-                      name: _nameController.text,
-                      email: _emailController.text,
-                      role: _selectedRole?.toString().split('.').last ?? '',
-                    );
-                    accountCubit.createAccount(
-                      newUser,
-                      _passwordController.text,
-                      _adminPasswordController.text, // ✅ Pass admin password
-                    );
-                    context.maybePop();
-                  }
-                },
-              ),
-            ],
-          ),
-        );
+        cubit.updateUser(account);
       }
     }
   }
@@ -193,7 +146,7 @@ class _AccountDialogState extends State<AccountDialog> {
                         ? const CircularProgressIndicator()
                         : CustomButton(
                             text: isEditing ? 'Save Changes' : 'Create Account',
-                            onTap: _submit, // Use _submit function
+                            onTap: _submit,
                           );
                   },
                 ),

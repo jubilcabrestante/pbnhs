@@ -1,16 +1,16 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-part 'user_model.g.dart';
+part 'account_vm.g.dart';
 
 @JsonSerializable()
-class UserVm {
+class AccountVm {
   final String uid;
   final String role;
   final String name;
   final String email;
   final bool isNewUser;
 
-  const UserVm({
+  const AccountVm({
     required this.uid,
     required this.role,
     required this.name,
@@ -18,7 +18,8 @@ class UserVm {
     required this.isNewUser,
   });
 
-  factory UserVm.fromJson(Map<String, dynamic> json) => _$UserVmFromJson(json);
+  factory AccountVm.fromJson(Map<String, dynamic> json) =>
+      _$AccountVmFromJson(json);
 
-  Map<String, dynamic> toJson() => _$UserVmToJson(this);
+  Map<String, dynamic> toJson() => _$AccountVmToJson(this);
 }

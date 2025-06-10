@@ -1,14 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
 
 abstract class IUserAccountRepository {
   Stream<User?> get currentUserStream;
 
-  Future<void> createUserWithEmailAndPassword(
-      UserModel user, String password, String adminPassword);
+  Future<void> createUserWithEmailAndPassword(AccountVm user, String password);
 
-  Future<void> saveUser(UserModel user);
-  Future<List<UserModel>> getUsers();
+  Future<List<AccountVm>> getUsers();
+
+  Future<void> updateUser(AccountVm user);
 
   Future<void> deleteUser(String uid);
 }

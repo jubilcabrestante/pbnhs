@@ -20,8 +20,7 @@ mixin _$AccountState {
   bool get isLoading => throw _privateConstructorUsedError;
   bool get isSuccess => throw _privateConstructorUsedError;
   bool get isRole => throw _privateConstructorUsedError;
-  List<UserModel>? get users => throw _privateConstructorUsedError;
-  UserModel? get currentUser => throw _privateConstructorUsedError;
+  List<AccountVm>? get users => throw _privateConstructorUsedError;
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.
@@ -41,10 +40,7 @@ abstract class $AccountStateCopyWith<$Res> {
       bool isLoading,
       bool isSuccess,
       bool isRole,
-      List<UserModel>? users,
-      UserModel? currentUser});
-
-  $UserModelCopyWith<$Res>? get currentUser;
+      List<AccountVm>? users});
 }
 
 /// @nodoc
@@ -67,7 +63,6 @@ class _$AccountStateCopyWithImpl<$Res, $Val extends AccountState>
     Object? isSuccess = null,
     Object? isRole = null,
     Object? users = freezed,
-    Object? currentUser = freezed,
   }) {
     return _then(_value.copyWith(
       errorMessage: freezed == errorMessage
@@ -89,26 +84,8 @@ class _$AccountStateCopyWithImpl<$Res, $Val extends AccountState>
       users: freezed == users
           ? _value.users
           : users // ignore: cast_nullable_to_non_nullable
-              as List<UserModel>?,
-      currentUser: freezed == currentUser
-          ? _value.currentUser
-          : currentUser // ignore: cast_nullable_to_non_nullable
-              as UserModel?,
+              as List<AccountVm>?,
     ) as $Val);
-  }
-
-  /// Create a copy of AccountState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $UserModelCopyWith<$Res>? get currentUser {
-    if (_value.currentUser == null) {
-      return null;
-    }
-
-    return $UserModelCopyWith<$Res>(_value.currentUser!, (value) {
-      return _then(_value.copyWith(currentUser: value) as $Val);
-    });
   }
 }
 
@@ -125,11 +102,7 @@ abstract class _$$AccountStateImplCopyWith<$Res>
       bool isLoading,
       bool isSuccess,
       bool isRole,
-      List<UserModel>? users,
-      UserModel? currentUser});
-
-  @override
-  $UserModelCopyWith<$Res>? get currentUser;
+      List<AccountVm>? users});
 }
 
 /// @nodoc
@@ -150,7 +123,6 @@ class __$$AccountStateImplCopyWithImpl<$Res>
     Object? isSuccess = null,
     Object? isRole = null,
     Object? users = freezed,
-    Object? currentUser = freezed,
   }) {
     return _then(_$AccountStateImpl(
       errorMessage: freezed == errorMessage
@@ -172,11 +144,7 @@ class __$$AccountStateImplCopyWithImpl<$Res>
       users: freezed == users
           ? _value._users
           : users // ignore: cast_nullable_to_non_nullable
-              as List<UserModel>?,
-      currentUser: freezed == currentUser
-          ? _value.currentUser
-          : currentUser // ignore: cast_nullable_to_non_nullable
-              as UserModel?,
+              as List<AccountVm>?,
     ));
   }
 }
@@ -189,8 +157,7 @@ class _$AccountStateImpl implements _AccountState {
       this.isLoading = false,
       this.isSuccess = false,
       this.isRole = false,
-      final List<UserModel>? users,
-      this.currentUser})
+      final List<AccountVm>? users})
       : _users = users;
 
   @override
@@ -204,9 +171,9 @@ class _$AccountStateImpl implements _AccountState {
   @override
   @JsonKey()
   final bool isRole;
-  final List<UserModel>? _users;
+  final List<AccountVm>? _users;
   @override
-  List<UserModel>? get users {
+  List<AccountVm>? get users {
     final value = _users;
     if (value == null) return null;
     if (_users is EqualUnmodifiableListView) return _users;
@@ -215,11 +182,8 @@ class _$AccountStateImpl implements _AccountState {
   }
 
   @override
-  final UserModel? currentUser;
-
-  @override
   String toString() {
-    return 'AccountState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole, users: $users, currentUser: $currentUser)';
+    return 'AccountState(errorMessage: $errorMessage, isLoading: $isLoading, isSuccess: $isSuccess, isRole: $isRole, users: $users)';
   }
 
   @override
@@ -234,20 +198,12 @@ class _$AccountStateImpl implements _AccountState {
             (identical(other.isSuccess, isSuccess) ||
                 other.isSuccess == isSuccess) &&
             (identical(other.isRole, isRole) || other.isRole == isRole) &&
-            const DeepCollectionEquality().equals(other._users, _users) &&
-            (identical(other.currentUser, currentUser) ||
-                other.currentUser == currentUser));
+            const DeepCollectionEquality().equals(other._users, _users));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      errorMessage,
-      isLoading,
-      isSuccess,
-      isRole,
-      const DeepCollectionEquality().hash(_users),
-      currentUser);
+  int get hashCode => Object.hash(runtimeType, errorMessage, isLoading,
+      isSuccess, isRole, const DeepCollectionEquality().hash(_users));
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.
@@ -264,8 +220,7 @@ abstract class _AccountState implements AccountState {
       final bool isLoading,
       final bool isSuccess,
       final bool isRole,
-      final List<UserModel>? users,
-      final UserModel? currentUser}) = _$AccountStateImpl;
+      final List<AccountVm>? users}) = _$AccountStateImpl;
 
   @override
   String? get errorMessage;
@@ -276,9 +231,7 @@ abstract class _AccountState implements AccountState {
   @override
   bool get isRole;
   @override
-  List<UserModel>? get users;
-  @override
-  UserModel? get currentUser;
+  List<AccountVm>? get users;
 
   /// Create a copy of AccountState
   /// with the given fields replaced by the non-null parameter values.

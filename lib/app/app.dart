@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/app/routes/app_router.dart';
+import 'package:pbnhs/core/domain/cubit/user_auth_cubit.dart';
 import 'package:pbnhs/core/repository/user_repository.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
@@ -10,33 +11,30 @@ import 'package:pbnhs/features/list_reports/repository/list_report_repo.dart';
 import 'package:pbnhs/features/list_type/domain/list_type_cubit/list_type_cubit.dart';
 import 'package:pbnhs/features/list_type/repository/type_repo.dart';
 import 'package:pbnhs/features/forgot_password/domain/cubit/forgot_password_cubit.dart';
-import 'package:pbnhs/features/login/domain/cubit/user_auth_cubit.dart';
 
-class MyApp extends StatelessWidget {
-  MyApp({super.key});
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   final _appRouter = AppRouter();
-
-  // This widget is the root of your application.
+  final userAccountRepository = UserAccountRepository();
+  final type = TypeRepository();
+  final userauth = UserAuthRepository();
+  final list = ListReportsRepository();
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => ListTypeCubit(TypeRepository())),
+        BlocProvider(create: (context) => ListTypeCubit(type)),
+        BlocProvider(create: (context) => AccountCubit(userAccountRepository)),
+        BlocProvider(create: (context) => UserAuthCubit(userauth)),
+        BlocProvider(create: (context) => ListReportsCubit(list)),
         BlocProvider(
-            create: (context) => AccountCubit(UserAccountRepository())),
-        BlocProvider(
-          create: (context) {
-            final userAuthCubit = UserAuthCubit(UserAuthRepository());
-            userAuthCubit.initializeUser(); // ✅ Ensure user details are fetched
-            return userAuthCubit;
-          },
-        ),
-        BlocProvider(
-            create: (context) => ListReportsCubit(
-                ListReportsRepository(), UserAuthRepository())),
-        BlocProvider(
-          create: (context) => ForgotPasswordCubit(UserAuthRepository()),
+          create: (context) => ForgotPasswordCubit(userauth),
         ),
       ],
       child: MaterialApp.router(
@@ -47,11 +45,9 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
         ),
         routerConfig: _appRouter.config(),
-        // Optionally, add a builder to handle errors or loading states
         builder: (context, child) {
           return BlocListener<AccountCubit, AccountState>(
             listener: (context, state) {
-              // Handle any state changes here (e.g., show dialogs, navigate, etc.)
               if (state.errorMessage != null &&
                   state.errorMessage!.isNotEmpty) {
                 ScaffoldMessenger.of(context).showSnackBar(

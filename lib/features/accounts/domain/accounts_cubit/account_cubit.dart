@@ -1,53 +1,41 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
-import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
 import 'package:pbnhs/features/accounts/repository/user_account_repository.dart';
 
 class AccountCubit extends Cubit<AccountState> {
   final UserAccountRepository _userAccountRepository;
 
-  AccountCubit(this._userAccountRepository) : super(const AccountState());
+  AccountCubit(this._userAccountRepository) : super(const AccountState()) {
+    getUsers();
+  }
 
-  Future<void> createAccount(
-      UserModel user, String password, String adminPassword) async {
-    emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
+  Future<void> createAccount(AccountVm user, String password) async {
+    emit(state.copyWith(
+      isLoading: true,
+    ));
 
     try {
       await _userAccountRepository.createUserWithEmailAndPassword(
         user,
         password,
-        adminPassword,
       );
-
-      // ✅ Convert FirebaseAuth User to UserModel
-      final firebaseUser = await _userAccountRepository.currentUserStream.first;
-      final currentUser = firebaseUser != null
-          ? UserModel(
-              uid: firebaseUser.uid,
-              email: firebaseUser.email ?? '',
-              role: '', name: '', // Assign the role if needed
-            )
-          : null;
 
       emit(state.copyWith(
         isLoading: false,
         isSuccess: true,
-        currentUser: currentUser,
       ));
-
-      log("Logged in user: ${currentUser?.email}");
+      getUsers();
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }
   }
 
-  Future<void> updateUser(UserModel user) async {
+  Future<void> updateUser(AccountVm user) async {
     emit(state.copyWith(isLoading: true, errorMessage: null, isSuccess: false));
 
     try {
-      await _userAccountRepository.saveUser(user);
+      await _userAccountRepository.updateUser(user);
       final updatedUsers = await _userAccountRepository.getUsers();
 
       emit(state.copyWith(
@@ -63,8 +51,8 @@ class AccountCubit extends Cubit<AccountState> {
   Future<void> getUsers() async {
     emit(state.copyWith(isLoading: true, errorMessage: null));
     try {
-      List<UserModel> users = await _userAccountRepository.getUsers();
-      emit(state.copyWith(isLoading: false, users: users)); // Fix this line
+      List<AccountVm> users = await _userAccountRepository.getUsers();
+      emit(state.copyWith(isLoading: false, users: users));
     } catch (e) {
       emit(state.copyWith(isLoading: false, errorMessage: e.toString()));
     }

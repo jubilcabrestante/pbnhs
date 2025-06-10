@@ -1,11 +1,11 @@
-import '../models/user_auth/user_auth_model.dart';
+import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
 
 class UserAuthUtils {
-  static String getRole(UserAuthModel authModel) {
-    return authModel.user.role;
+  static String getRole(UserVm user) {
+    return user.role;
   }
 
-  static bool isSuperAdmin(UserAuthModel authModel) {
-    return authModel.user.role == "Super-Admin";
+  static bool isSuperAdmin(UserVm user) {
+    return user.role == "Super-Admin";
   }
 }

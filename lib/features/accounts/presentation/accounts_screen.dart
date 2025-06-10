@@ -1,8 +1,10 @@
+import 'dart:developer';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pbnhs/core/common_widgets/custom_button.dart';
-import 'package:pbnhs/features/accounts/repository/user_model/user_model.dart';
+import 'package:pbnhs/features/accounts/repository/account_model/account_vm.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_cubit.dart';
 import 'package:pbnhs/features/accounts/domain/accounts_cubit/account_state.dart';
 import 'package:pbnhs/features/accounts/presentation/account_dialog.dart';
@@ -16,13 +18,6 @@ class AccountsScreen extends StatefulWidget {
 }
 
 class _AccountsScreenState extends State<AccountsScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Fetch users when the screen is first loaded
-    context.read<AccountCubit>().getUsers();
-  }
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AccountCubit, AccountState>(
@@ -65,7 +60,7 @@ class _AccountsScreenState extends State<AccountsScreen> {
                 Expanded(
                   child: state.users != null && state.users!.isNotEmpty
                       ? DataTable(
-                          columnSpacing: 20.0, // Adjust spacing
+                          columnSpacing: 20.0,
                           headingRowColor: WidgetStateColor.resolveWith(
                               (states) => Colors.grey[300]!),
                           border:
@@ -126,10 +121,11 @@ class _AccountsScreenState extends State<AccountsScreen> {
   }
 
   // Function to show the edit dialog
-  void _showEditDialog(UserModel user) {
+  void _showEditDialog(AccountVm user) {
+    log('user selected: ${user.name}');
     showDialog(
       context: context,
-      builder: (context) => AccountDialog(user: user), // Pass the actual user
+      builder: (context) => AccountDialog(user: user),
     );
   }
 
